@@ -13,6 +13,7 @@
  2. Install dependencies for frontend
  
     `cd ./forum_frontend`
+    
     `npm install`
     
  3. Run the backend server
@@ -22,5 +23,6 @@
  4. Run the frontend server
  
     `cd ./forum_frontend`
+    
     `npm start`
  
