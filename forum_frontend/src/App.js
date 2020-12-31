@@ -76,13 +76,19 @@ class App extends Component {
 
     updatePost = () => {
         const url = this.getUrl(this.state.currentPostUrl)
-        fetch(url)
-            .then((result) => result.json())
-            .then((result) => {
-                this.setState({
-                    postData: result
+        if (url !== ""){
+            fetch(url)
+                .then((result) => result.json())
+                .then((result) => {
+                    this.setState({
+                        postData: result
+                    })
                 })
-            })
+        }
+        else{
+            console.log("postUrl==")
+        }
+
     }
 
     enableToolTips() {
