@@ -1,4 +1,7 @@
 function CalTimeInterval(time_text){
+    if (time_text === "") {
+        return ""
+    }
     const now = Date.now()
     const pub_date = Date.parse(time_text)
     const dif = now - pub_date

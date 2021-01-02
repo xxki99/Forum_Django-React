@@ -42,16 +42,26 @@ class PostContainer extends Component {
     render() {
         const { postData, commonStyle } = this.props
         const { comment_set, title } = postData
-        return (
-            <div className={"wrapper col" + commonStyle}>
-                <div className="list-group-item">
-                    <h3>{title}</h3>
+
+        if (title !== "") {
+            return (
+                <div className={"wrapper col" + commonStyle}>
+                    <div className="list-group-item">
+                        <h3>{title}</h3>
+                    </div>
+                    <div className="list-group scrollable-child">
+                        <Comments comment_set={comment_set} />
+                    </div>
                 </div>
-                <div className="list-group scrollable-child">
-                    <Comments comment_set={comment_set} />
+            )
+        }
+        else {
+            return (
+                <div className={"wrapper col-9" + commonStyle}>
                 </div>
-            </div>
-        )
+            )
+        }
+
     }
 }
 
