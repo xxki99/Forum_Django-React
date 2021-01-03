@@ -1,12 +1,20 @@
 from rest_framework import routers
 from . import views
+from django.urls import path
 
-router = routers.DefaultRouter()
-router.register(r'users', views.UserProfileViewset)
-router.register(r'threads', views.ThreadViewset)
+forum_router = routers.DefaultRouter()
+forum_router.register(r'users', views.UserProfileViewset)
+forum_router.register(r'threads', views.ThreadViewset)
 
-router.register(r'posts', views.PostViewset)
-router.register(r'comment', views.CommentViewset)
+forum_router.register(r'posts', views.PostViewset)
+forum_router.register(r'comment', views.CommentViewset)
 
-routerUrls = router.urls
+forumRouterUrls = forum_router.urls
+
+
+
+authUrls = [
+    path('token/', views.CustomObtainAuthToken.as_view(), name="token")
+]
+
 

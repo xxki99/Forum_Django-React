@@ -1,9 +1,12 @@
 from typing import Dict
 from django.contrib.auth.models import User
 from django.db.models import query
+from django.http.response import Http404
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import Comment, Thread, UserProfile, Post
 from .serializers import CommentSerializer, PostListSerializer, PostDetailSerializer, ThreadDetailSerializer, ThreadSerializer, UserProfileSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
@@ -15,8 +18,21 @@ from rest_framework import status
 from django.http.request import QueryDict
 from django.db.models import Max
 
-
 # Create your views here.
+
+"""
+Auth
+"""
+class CustomObtainAuthToken(ObtainAuthToken):
+    def get(self, request, foramt=None):
+        if (request.auth):
+            user = request.user
+            returnValue = {
+                "username": user.username
+            }
+            return Response(returnValue, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 """
 Customized viewset for userprofile

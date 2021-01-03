@@ -19,12 +19,13 @@ from django.urls.conf import include
 from django.views.generic import RedirectView
 from rest_framework.authtoken import views
 
-from backend.urls import routerUrls
+from backend.urls import forumRouterUrls, authUrls
 
 urlpatterns = [
-    path('api/forum/', include((routerUrls, 'forumAPI'))), 
+    path('api/forum/', include((forumRouterUrls, 'forumAPI'))), 
+    path('api/auth/', include((authUrls, 'authAPI'))), 
     #path('forum/', include('rest_framework.urls', namespace='rest_framework')), 
-    path('api/token-auth/', views.obtain_auth_token, name="api-token-auth"), 
+    #path('api/token-auth/obtain', views.obtain_auth_token, name="api-token-auth"), 
     path('', RedirectView.as_view(url = reverse_lazy('forumAPI:api-root'))), 
     path('admin/', admin.site.urls)
 ]

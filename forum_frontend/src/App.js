@@ -5,6 +5,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 import ThreadContainer from "./Thread"
 import PostContainer from "./Post"
+import Cookies from "universal-cookie"
+
+const verifyLoginUrl = "/api/auth/token/"
 
 class App extends Component {
     state = {
@@ -44,14 +47,30 @@ class App extends Component {
                 },
             ]
         },
-        commonContainerStyle: " mt-1 mb-1 p-0 border border-3 border-dark rounded "
+        commonContainerStyle: " mt-1 mb-1 p-0 border border-3 border-dark rounded ",
+        userData: {
+            isLogin: false,
+            userprofileData: {
+                username: ""
+            }
+        }
     }
+
+    // initializing process
 
     getUrl = (fullUrl) => {
         const relativeUrl = fullUrl.replace("http://localhost:8000/", "")
         return relativeUrl
     }
 
+    enableToolTips() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new Tooltip(tooltipTriggerEl)
+        })
+    }
+
+    //Nav relatived
     getThreadsList = () => {
         const url = this.getUrl(this.state.threadsListUrl)
         fetch(url)
@@ -76,7 +95,7 @@ class App extends Component {
 
     updatePost = () => {
         const url = this.getUrl(this.state.currentPostUrl)
-        if (url !== ""){
+        if (url !== "") {
             fetch(url)
                 .then((result) => result.json())
                 .then((result) => {
@@ -85,17 +104,7 @@ class App extends Component {
                     })
                 })
         }
-        else{
-            console.log("postUrl==")
-        }
 
-    }
-
-    enableToolTips() {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new Tooltip(tooltipTriggerEl)
-        })
     }
 
     directToNewThread = (threadUrl) => {
@@ -121,7 +130,57 @@ class App extends Component {
         )
     }
 
+    //Login relatived
+    verifyLogin = () => {
+        const cookies = new Cookies()
+        const token = cookies.get("token")
+
+        fetch(verifyLoginUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+        })
+            .then((response) => {
+                const status = response.status
+                // Login in success
+                if (status === 200) {
+                    response.json()
+                        .then((responseData) => {
+                            this.setState({
+                                userData: {
+                                    isLogin: true,
+                                    userprofileData: {
+                                        username: responseData.username
+                                    }
+                                },
+                            })
+
+                        })
+                }
+                else {   //handle login error
+                    this.setState({
+                        userData: {
+                            isLogin: false,
+                            userprofileData: {
+                                username: ""
+                            }
+                        },
+                    })
+                }
+            })
+    }
+
+    logout = () => {
+        const cookie = new Cookies()
+        cookie.remove("token")
+        this.verifyLogin()
+    }
+
     componentDidMount() {
+        this.verifyLogin()
         this.getThreadsList()
         this.updateThread()
         this.updatePost()
@@ -133,21 +192,15 @@ class App extends Component {
     }
 
     render() {
-        const { threadData, postData, thread_set, commonContainerStyle } = this.state
+        const { threadData, postData, thread_set, userData, commonContainerStyle } = this.state
 
         return (
             <div className="container">
                 <div className="row">
 
-                    {/* <div className={"col-3 " + commonContainerStyle}>
-                        <ThreadContainer className="testingoutside" thread_set={thread_set} threadData={threadData} directToNewPost={this.directToNewPost} directToNewThread={this.directToNewThread} />
-                    </div>
-
-                    <div className={"col " + commonContainerStyle}>
-                        <PostContainer postData={postData} />
-                    </div> */}
-
-                    <ThreadContainer commonStyle={commonContainerStyle} thread_set={thread_set} threadData={threadData} directToNewPost={this.directToNewPost} directToNewThread={this.directToNewThread} />
+                    <ThreadContainer commonStyle={commonContainerStyle} thread_set={thread_set} threadData={threadData}
+                        directToNewPost={this.directToNewPost} directToNewThread={this.directToNewThread}
+                        verifyLogin={this.verifyLogin} logout={this.logout} userData={userData} />
                     <PostContainer commonStyle={commonContainerStyle} postData={postData} />
 
                 </div>
