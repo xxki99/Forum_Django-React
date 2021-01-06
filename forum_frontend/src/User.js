@@ -87,7 +87,7 @@ class UserLogin extends Component {
                 <button type="button" className="btn p-0 pt-1" data-toggle="modal" data-target="#loginModal">
                     <i className="fas fa-user-secret" style={userIconStyle}></i>
                 </button>
-                <div className="modal fade" id="loginModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal fade" id="loginModal" tabIndex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -98,14 +98,14 @@ class UserLogin extends Component {
                             </div>
                             <div className="modal-body">
 
-                                <label for="UsernameInput" className="form-label">Username:</label>
+                                <label htmlFor="UsernameInput" className="form-label">Username:</label>
                                 <div className="input-group">
-                                    <input type="text" class="form-control" id="UsernameInput" placeholder="Username" aria-label="Username" onChange={this.handleUsernameChange} />
+                                    <input type="text" className="form-control" id="UsernameInput" placeholder="Username" aria-label="Username" onChange={this.handleUsernameChange} />
                                 </div>
 
-                                <label for="PasswordInput" className="form-label">Password</label>
+                                <label htmlFor="PasswordInput" className="form-label">Password</label>
                                 <div className="input-group">
-                                    <input type="password" class="form-control" id="PasswordInput" placeholder="Password" aria-label="Password" onChange={this.handlePasswordChange} />
+                                    <input type="password" className="form-control" id="PasswordInput" placeholder="Password" aria-label="Password" onChange={this.handlePasswordChange} />
                                 </div>
 
 
@@ -131,7 +131,7 @@ function UserProfile(props) {
                 <i className="fas fa-user-check" style={userIconStyle}></i>
             </button>
 
-            <div className="modal fade" id="userProfileModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal fade" id="userProfileModal" tabIndex="-1" role="dialog" aria-labelledby="userProfileModal" aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content">
                         <div className="modal-header">

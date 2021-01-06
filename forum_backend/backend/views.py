@@ -43,6 +43,18 @@ class UserProfileViewset(mixins.CreateModelMixin, mixins.RetrieveModelMixin, vie
     serializer_class=UserProfileSerializer
     permission_classes=[AllowAny]
 
+    #create a new view for getting post_set of a user
+    @action(detail=True, methods=["get"], url_path="postset", url_name="userPostset")
+    def getUserPostSet(self, request, pk=None):
+        userprofile = get_object_or_404(UserProfile, pk=pk)
+        posts = userprofile.post_set.all()
+        serializer = PostListSerializer(posts, many=True, context={"request": request})
+        returnData = {
+            "name": userprofile.user.username, 
+            "post_set": serializer.data
+        }
+        return Response(returnData, status=status.HTTP_200_OK)
+
 
 """
 Post viewset (include create post, retrieve post and list)

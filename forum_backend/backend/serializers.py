@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 from rest_framework.serializers import Serializer
 from .models import UserProfile, Thread, Post, Comment
 from django.contrib.auth.models import User
@@ -11,12 +12,13 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     username=serializers.CharField(source="user.username")
     email=serializers.EmailField(source="user.email")
     password=serializers.CharField(write_only=True)
-    post_set=serializers.HyperlinkedRelatedField(view_name="forumAPI:post-detail", read_only=True, many=True)
+    #post_set=serializers.HyperlinkedRelatedField(view_name="forumAPI:post-detail", read_only=True, many=True)
+    post_set_url = serializers.SerializerMethodField()
     date_joined=serializers.DateTimeField(source="user.date_joined", read_only=True)
 
     class Meta:
         model=UserProfile
-        fields=["username","email", "password", "date_joined", "post_set"]
+        fields=["username","email", "password", "date_joined", "post_set_url"]
         extra_kwargs={
             "username": {"write_only": True}, 
             "password": {"write_only": True}, 
@@ -40,6 +42,13 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
         user.save()
         userprofile.save()
         return userprofile
+    
+    #Create a function for getting user post data url
+    def get_post_set_url(self, obj):
+        pk = obj.pk
+        post_set_url = reverse("forumAPI:userprofile-userPostset", kwargs={"pk": pk})
+        return post_set_url
+
 
 class CommentSerializer(serializers.HyperlinkedModelSerializer):
     author=serializers.HyperlinkedRelatedField(view_name="forumAPI:userprofile-detail", read_only=True)
