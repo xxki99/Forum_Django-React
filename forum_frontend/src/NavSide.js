@@ -8,7 +8,7 @@ function PostList(props) {
     const rows = post_set.map((post, index) => {
         const date_dif = CalTimeInterval(post.pub_date)
         return (
-            <a key={index} href="#" className="list-group-item list-group-item-action noselect" onClick={() => { directToNewPost(post.url) }}>
+            <a key={index} href="/#" className="list-group-item list-group-item-action noselect" onClick={() => { directToNewPost(post.url) }}>
                 <div className="d-flex justify-content-between">
                     <p className="mb-1">{post.authorName}</p>
                     <small>{date_dif}</small>
@@ -48,7 +48,7 @@ function ThreadDropDown(props){
     )
 }
 
-class ThreadContainer extends Component {
+class NavSide extends Component {
     render() {
         const { threadData, thread_set, userData, commonStyle, directToNewPost, directToNewThread, verifyLogin, logout } = this.props
         const { post_set, name } = threadData
@@ -75,4 +75,4 @@ class ThreadContainer extends Component {
     }
 }
 
-export default ThreadContainer
+export default NavSide
