@@ -1,16 +1,19 @@
 import React, { Component } from "react"
 import Cookies from 'universal-cookie'
 import $ from "jquery"
+import {getUrl} from "./UrlTools"
 
 const userIconStyle = {
-    fontSize: "1.60em",
+    fontSize: "1.55em",
 }
+
+const loginUrl = "/api/auth/token/"
+const writePostUrl = "/api/forum/posts/"
 
 class UserLogin extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            loginUrl: "/api/auth/token/",
             username: "",
             password: ""
         }
@@ -52,7 +55,7 @@ class UserLogin extends Component {
     }
 
     submitLoginForm = (event) => {
-        const { loginUrl, username, password } = this.state
+        const { username, password } = this.state
         const bodyObj = {
             username: username,
             password: password
@@ -80,7 +83,7 @@ class UserLogin extends Component {
     }
 
     render() {
-        
+
 
         return (
             <div className="">
@@ -124,10 +127,10 @@ class UserLogin extends Component {
 
 function UserProfile(props) {
     const { userprofileData, logout } = props
-    const {username} = userprofileData
+    const { username } = userprofileData
     return (
         <div className="">
-            <button type="button" className="btn p-0 pt-1" data-toggle="modal" data-target="#userProfileModal">
+            <button type="button" className="btn p-0" data-toggle="modal" data-target="#userProfileModal">
                 <i className="fas fa-user-check" style={userIconStyle}></i>
             </button>
 
@@ -147,7 +150,7 @@ function UserProfile(props) {
 
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={()=>{logout()}}>Logout</button>
+                            <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => { logout() }}>Logout</button>
                         </div>
                     </div>
                 </div>
@@ -157,15 +160,182 @@ function UserProfile(props) {
     )
 }
 
-class UserEntry extends Component {
+class UserWritePost extends Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            title: "",
+            content: "",
+            thread: ""
+        }
+
+        this.handleChange_title = this.handleChange_title.bind(this)
+        this.handleChange_content = this.handleChange_content.bind(this)
+        this.handleChange_thread = this.handleChange_thread.bind(this)
+        this.toggleWritePostModel = this.toggleWritePostModel.bind(this)
+        this.performWritePost = this.performWritePost.bind(this)
+    }
+
+    handleChange_title(e) {
+        this.setState(
+            {
+                title: e.target.value
+            }
+        )
+    }
+
+    handleChange_content(e) {
+        this.setState(
+            {
+                content: e.target.value
+            }
+        )
+    }
+
+    performWritePost() {
+        const { title, content, thread } = this.state
+        const cookies = new Cookies()
+        const token = cookies.get("token")
+        const bodyObj = {
+            title: title, 
+            content: content, 
+            thread: thread
+        }
+        fetch(writePostUrl, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            body: JSON.stringify(bodyObj)
+            }
+        )
+            .then(response => response.json())
+            .then((responseData) => {
+                console.log(responseData)
+            })
+        }
+
+    handleChange_thread(e) {
+        const thread = getUrl(e.target.value)
+        this.setState(
+            {
+                thread: thread
+            }
+        )
+    }
+
+    componentDidMount(){
+        const {currentThreadUrl} = this.props
+
+        this.setState({
+            thread: getUrl(currentThreadUrl)
+        })
+    }
+
+    // call this function to toggle the modal and initialize it
+    toggleWritePostModel(){
+        // update the thread when the modal is toggled
+        const relativeThreadUrl = getUrl(this.props.currentThreadUrl)
+        this.setState(
+            {
+                thread: relativeThreadUrl
+            }
+        )
+
+        // toggle
+        $("#writePostModal").modal("toggle")
+    }
 
     render() {
-        const {userData, verifyLogin, logout} = this.props
+        const { thread_set, currentThreadUrl } = this.props
+        var relativeThreadUrl = ""
+        if (currentThreadUrl){
+            relativeThreadUrl = getUrl(currentThreadUrl)
+        }
+        else{
+            relativeThreadUrl = ""
+        }
+
+        const threadsDropDown = thread_set.map((thread, index) => {
+            
+            if (getUrl(thread.url) === relativeThreadUrl){
+                return (
+                    <option selected value={thread.url}>{thread.name}</option>
+                )
+            }
+            else return (
+                <option value={thread.url}>{thread.name}</option>
+            )
+        })
+
+        return (
+            <div>
+                <button type="button" className="btn p-0" onClick={this.toggleWritePostModel} >
+                    <i className="fas fa-plus" style={userIconStyle}></i>
+                </button>
+
+                <div className="modal fade" id="writePostModal" tabIndex="-1" role="dialog" aria-labelledby="writePostModal" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="writePostModelLabel">Write a new post</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+
+                                <label htmlFor="postTitleInput" className="form-label">Title: </label>
+                                <div className="input-group">
+                                    <input type="text" className="form-control" id="postTitleInput" placeholder="Title" aria-label="Title"
+                                        onChange={this.handleChange_title} />
+                                </div>
+
+                                <label htmlFor="contentInput" className="form-label">Content: </label>
+                                <div className="input-group">
+                                    <textarea className="form-control" id="contentInput" aria-label="Content"
+                                        onChange={this.handleChange_content} />
+                                </div>
+
+                                <select class="form-select" aria-label="thread select" onChange={this.handleChange_thread}>
+                                    {threadsDropDown}
+                                </select>
+
+
+
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-primary" onClick={this.performWritePost}>Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        )
+    }
+}
+
+class UserPanel extends Component {
+
+    render() {
+        const { userData, thread_set, verifyLogin, logout, currentThreadUrl } = this.props
         const { isLogin } = userData
         if (isLogin) {
-            const {userprofileData} = userData
+            const { userprofileData } = userData
             return (
-                <UserProfile userprofileData={userprofileData} logout={logout} />
+                <div className="d-flex mt-1">
+                    <div>
+                        <UserProfile userprofileData={userprofileData} logout={logout} />
+                    </div>
+                    <div className="ml-3">
+                        <UserWritePost thread_set={thread_set} currentThreadUrl={currentThreadUrl} />
+                    </div>
+                </div>
             )
         }
         else {
@@ -177,4 +347,4 @@ class UserEntry extends Component {
     }
 }
 
-export default UserEntry
+export default UserPanel

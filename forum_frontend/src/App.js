@@ -216,7 +216,7 @@ class App extends Component {
     }
 
     render() {
-        const { postListData: threadData, postData, thread_set, userData, commonContainerStyle } = this.state
+        const { postListData: threadData, postData, thread_set, userData, commonContainerStyle, currentThreadUrl } = this.state
 
         return (
             <div className="container">
@@ -224,7 +224,7 @@ class App extends Component {
 
                     <NavSide commonStyle={commonContainerStyle} thread_set={thread_set} threadData={threadData}
                         directToNewPost={this.directToNewPost} directToNewThread={this.directToNewThread}
-                        verifyLogin={this.verifyLogin} logout={this.logout} userData={userData} />
+                        verifyLogin={this.verifyLogin} logout={this.logout} userData={userData} currentThreadUrl={currentThreadUrl} />
                     <PostContainer commonStyle={commonContainerStyle} postData={postData} updatePostList={this.updatePostList} />
 
                 </div>

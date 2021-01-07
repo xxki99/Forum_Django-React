@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import { CalTimeInterval } from "./TimeTools"
 import "./Thread.css"
-import UserEntry from "./User"
+import UserPanel from "./User"
 
 function PostList(props) {
     const { post_set, directToNewPost } = props
@@ -50,7 +50,7 @@ function ThreadDropDown(props){
 
 class NavSide extends Component {
     render() {
-        const { threadData, thread_set, userData, commonStyle, directToNewPost, directToNewThread, verifyLogin, logout } = this.props
+        const { threadData, thread_set, userData, commonStyle, directToNewPost, directToNewThread, verifyLogin, logout, currentThreadUrl } = this.props
         const { post_set, name } = threadData
 
         return (
@@ -63,7 +63,7 @@ class NavSide extends Component {
                         </div>
 
                         <div>
-                            <UserEntry verifyLogin={verifyLogin} logout={logout} userData={userData} />
+                            <UserPanel verifyLogin={verifyLogin} logout={logout} userData={userData} thread_set={thread_set} currentThreadUrl={currentThreadUrl} />
                         </div>
                         
                 </div>
