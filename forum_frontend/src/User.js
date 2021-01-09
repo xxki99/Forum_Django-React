@@ -1,69 +1,104 @@
 import React, { Component } from "react"
 import Cookies from 'universal-cookie'
+import bootstrap from "bootstrap"
 import $ from "jquery"
-import {getUrl} from "./UrlTools"
+import { getUrl } from "./UrlTools"
+import { TextInput } from "./InputComponents"
 
 const userIconStyle = {
     fontSize: "1.55em",
 }
 
 const loginUrl = "/api/auth/token/"
+const signupUrl = "/api/forum/users/"
 const writePostUrl = "/api/forum/posts/"
+const signupModalID = "signupModal"
+const loginModalID = "loginModal"
 
 class UserLogin extends Component {
     constructor(props) {
         super(props)
         this.state = {
             username: "",
-            password: ""
+            password: "",
+            errorText: {
+                username: "",
+                password: ""
+            },
         }
 
         this.handleUsernameChange = this.handleUsernameChange.bind(this)
         this.handlePasswordChange = this.handlePasswordChange.bind(this)
-        this.login = this.submitLoginForm.bind(this)
+        this.submitLoginForm = this.submitLoginForm.bind(this)
+        this.toggleLoginModal = this.toggleLoginModal.bind(this)
+        this.toggleSignupModal = this.toggleSignupModal.bind(this)
+        this.resetInput = this.resetInput.bind(this)
     }
 
-    postLoginDataToBackend = (url, body) => {
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        })
-            .then((response) => {
-                const status = response.status
-                response.json()
-                    .then((data) => {
-                        return this.performLogin(status, data)
-                    })
-            })
-        this.setState({
-            username: "",
-            password: ""
-        })
+    usernameInputID = "usernameInput"
+    passwordInputID = "passwordInput"
+
+    resetInput(){
+        $("#" + this.usernameInputID).val("")
+        $("#" + this.passwordInputID).val("")
+        this.setState(
+            {
+                username: "", 
+                password: "", 
+            }
+        )
     }
 
-    performLogin(status, data) {
-        if (status === 200) {
-            const cookies = new Cookies()
-            cookies.set("token", "Token " + data.token)
-            $("#loginModal").modal("hide")
-            this.props.verifyLogin()
-        }
-    }
-
-    submitLoginForm = (event) => {
+    submitLoginForm(event) {
         const { username, password } = this.state
         const bodyObj = {
             username: username,
             password: password
         }
 
-        this.postLoginDataToBackend(loginUrl, bodyObj)
+        fetch(getUrl(loginUrl), {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bodyObj)
+        })
+            .then((response) => {
+                if (response.ok) {
+                    response.json()
+                        .then((responseData) => {
+                            console.log(responseData)
+                            const cookies = new Cookies()
+                            cookies.set("token", "Token " + responseData.token)
+                            $("#" + loginModalID).modal("hide")
+                            this.props.verifyLogin()
+                        })
+                }
+                else {
+                    response.json().then((responseData) => {
+                        console.log(responseData)
 
-        return false
+                        this.setState(
+                            {
+                                errorText: responseData
+                            }
+                        )
+
+
+                    })
+                }
+                this.resetInput()
+            })
+    }
+
+    toggleLoginModal(){
+        $("#" + loginModalID).modal("toggle")
+    }
+
+    toggleSignupModal() {
+        $("#" + loginModalID).modal("hide")
+        $("#" + signupModalID).modal("toggle")
     }
 
     handleUsernameChange(event) {
@@ -83,14 +118,13 @@ class UserLogin extends Component {
     }
 
     render() {
-
-
+        const { errorText } = this.state
         return (
             <div className="">
-                <button type="button" className="btn p-0 pt-1" data-toggle="modal" data-target="#loginModal">
+                <button type="button" className="btn p-0 pt-1" onClick={this.toggleLoginModal}>
                     <i className="fas fa-user-secret" style={userIconStyle}></i>
                 </button>
-                <div className="modal fade" id="loginModal" tabIndex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
+                <div className="modal fade" id={loginModalID} tabIndex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -101,22 +135,256 @@ class UserLogin extends Component {
                             </div>
                             <div className="modal-body">
 
-                                <label htmlFor="UsernameInput" className="form-label">Username:</label>
-                                <div className="input-group">
-                                    <input type="text" className="form-control" id="UsernameInput" placeholder="Username" aria-label="Username" onChange={this.handleUsernameChange} />
+                                <div>
+                                    <small className="text-danger">{errorText.non_field_errors}</small>
                                 </div>
 
-                                <label htmlFor="PasswordInput" className="form-label">Password</label>
-                                <div className="input-group">
-                                    <input type="password" className="form-control" id="PasswordInput" placeholder="Password" aria-label="Password" onChange={this.handlePasswordChange} />
-                                </div>
+                                < TextInput id={this.usernameInputID} labelText="Username:" type="text" placeholder="Username"
+                                    handleChange={this.handleUsernameChange} errorText={errorText.username} />
 
-
+                                < TextInput id={this.passwordInputID} labelText="Password:" type="password" placeholder="Password"
+                                    handleChange={this.handlePasswordChange} errorText={errorText.password} />
 
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-primary" onClick={this.submitLoginForm}>Login</button>
+                                <button type="button" className="btn btn-primary" onClick={this.toggleSignupModal} >Sign-up</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
+
+class UserSignup extends Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            username: "",
+            password: "",
+            email: "",
+            confirmPassword: "",
+            errorText: {
+                non_field_errors: "",
+                username: "",
+                password: "",
+                email: "",
+                confirmPassword: ""
+            },
+        }
+
+        this.handleChange_username = this.handleChange_username.bind(this)
+        this.handleChange_password = this.handleChange_password.bind(this)
+        this.handleChange_email = this.handleChange_email.bind(this)
+        this.handleChange_confirmPassword = this.handleChange_confirmPassword.bind(this)
+        this.handleSignup = this.handleSignup.bind(this)
+        this.resetInput = this.resetInput.bind(this)
+        this.checkValidInput = this.checkValidInput.bind(this)
+
+    }
+
+    emailInputID = "emailInput_signup"
+    usernameInputID = "usernameInput_signup"
+    passwordInputID = "passwordInput_signup"
+    confirmPasswordInputID = "confirmPasswordInput_signup"
+    inputList = [this.emailInputID, this.usernameInputID, this.passwordInputID, this.confirmPasswordInputID]
+
+    resetInput(){
+        this.inputList.forEach((e)=>{
+            $("#" + e).val("")
+        })
+        this.setState(
+            {
+                username: "", 
+                password: "", 
+                confirmPassword: "", 
+                email: "", 
+            }
+        )
+    }
+
+    handleChange_username(e) {
+        this.setState(
+            {
+                username: e.target.value
+            }
+        )
+    }
+
+    handleChange_email(e) {
+        this.setState(
+            {
+                email: e.target.value
+            }
+        )
+    }
+
+    handleChange_password(e) {
+        this.setState(
+            {
+                password: e.target.value
+            }
+        )
+    }
+
+    handleChange_confirmPassword(e) {
+        this.setState(
+            {
+                confirmPassword: e.target.value
+            }
+        )
+    }
+
+    dismissSignupModal() {
+        $("#" + signupModalID).modal("hide")
+    }
+
+    checkValidInput() {
+        const { email, username, password, confirmPassword } = this.state
+        console.log("checking signup input valid")
+
+        var returnValue = {
+            isValid: true,
+            errorText: {
+                non_field_errors: "",
+                email: "",
+                username: "",
+                password: "",
+                confirmPassword: "",
+            }
+        }
+
+        // checking confirm password
+        if (password !== confirmPassword) {
+            returnValue.isValid = false
+            returnValue.errorText.confirmPassword = "Password do not match."
+        }
+
+        // checking email
+        if (!email.includes("@")) {
+            returnValue.isValid = false
+            returnValue.errorText.email = "Email must include @."
+        }
+
+        return returnValue
+    }
+
+    handleSignup() {
+        const { email, username, password } = this.state
+        const { verifyLogin } = this.props
+
+        // custom validation
+        // check for confirm password
+        const checkValidObj = this.checkValidInput()
+
+        if (checkValidObj.isValid) {
+            const bodyObj = {
+                username: username,
+                password: password,
+                email: email,
+            }
+
+            fetch(signupUrl, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bodyObj)
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        response.json()
+                            .then((responseData) => {
+                                this.dismissSignupModal()
+                            })
+                            .then(() => {
+                                // login, will be changed in the future (create a login function in parent component and pass down to UserLogin and UserSignup)
+                                const loginBodyObj = {
+                                    username: username,
+                                    password: password
+                                }
+                                fetch(getUrl(loginUrl), {
+                                    method: "POST",
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(loginBodyObj)
+                                })
+                                    .then((response) => {
+                                        if (response.ok) {
+                                            response.json()
+                                                .then((responseData) => {
+                                                    const cookies = new Cookies()
+                                                    cookies.set("token", "Token " + responseData.token)
+                                                    verifyLogin()
+                                                    this.dismissSignupModal()
+                                                })
+                                        }
+                                        else {
+                                            console.log("login after signup error")
+                                        }
+                                    })
+                            })
+                    }
+                    else {
+                        response.json()
+                            .then((errorData) => {
+                                this.setState(
+                                    {
+                                        errorText: errorData
+                                    }
+                                )
+                            })
+                    }
+                    this.resetInput()
+                })
+
+        }
+        else {  // handle invalid input
+            this.setState({
+                errorText: checkValidObj.errorText
+            })
+        }
+    }
+
+
+
+    render() {
+        const { errorText } = this.state
+        return (
+            <div className="modal fade" id="signupModal" tabIndex="-1" role="dialog" aria-labelledby={signupModalID} aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="userProfileModelLabel">Sign up</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div>
+                                <p className="text-danger">
+                                    {errorText.non_field_errors}
+                                </p>
+                            </div>
+
+                            <TextInput id={this.emailInputID} labelText="Email:" type="text" placeholder="Email"
+                                errorText={errorText.email} handleChange={this.handleChange_email} />
+                            <TextInput id={this.usernameInputID} labelText="Username:" type="text" placeholder="Username"
+                                errorText={errorText.username} handleChange={this.handleChange_username} />
+                            <TextInput id={this.passwordInputID} labelText="Password:" type="password" placeholder="Password"
+                                errorText={errorText.password} password handleChange={this.handleChange_password} />
+                            <TextInput id={this.confirmPasswordInputID} labelText="Confirm your password:" type="password" placeholder="Password"
+                                errorText={errorText.confirmPassword} confirmPassword handleChange={this.handleChange_confirmPassword} />
+
+
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-primary" onClick={this.handleSignup} >Signup</button>
                         </div>
                     </div>
                 </div>
@@ -160,6 +428,20 @@ function UserProfile(props) {
     )
 }
 
+function ThreadDropDown(props) {
+    const { thread_set, currentThread, handleChange } = props
+    const options = thread_set.map((thread, index) => {
+        return (
+            <option value={getUrl(thread.url)} key={index}>{thread.name}</option>
+        )
+    })
+    return (
+        <select value={currentThread} onChange={handleChange}>
+            {options}
+        </select>
+    )
+}
+
 class UserWritePost extends Component {
     constructor(props) {
         super(props)
@@ -198,8 +480,8 @@ class UserWritePost extends Component {
         const cookies = new Cookies()
         const token = cookies.get("token")
         const bodyObj = {
-            title: title, 
-            content: content, 
+            title: title,
+            content: content,
             thread: thread
         }
         fetch(writePostUrl, {
@@ -210,16 +492,17 @@ class UserWritePost extends Component {
                 'Authorization': token
             },
             body: JSON.stringify(bodyObj)
-            }
+        }
         )
             .then(response => response.json())
             .then((responseData) => {
                 console.log(responseData)
             })
-        }
+    }
 
     handleChange_thread(e) {
         const thread = getUrl(e.target.value)
+        console.log(thread)
         this.setState(
             {
                 thread: thread
@@ -227,16 +510,8 @@ class UserWritePost extends Component {
         )
     }
 
-    componentDidMount(){
-        const {currentThreadUrl} = this.props
-
-        this.setState({
-            thread: getUrl(currentThreadUrl)
-        })
-    }
-
     // call this function to toggle the modal and initialize it
-    toggleWritePostModel(){
+    toggleWritePostModel() {
         // update the thread when the modal is toggled
         const relativeThreadUrl = getUrl(this.props.currentThreadUrl)
         this.setState(
@@ -249,27 +524,18 @@ class UserWritePost extends Component {
         $("#writePostModal").modal("toggle")
     }
 
-    render() {
-        const { thread_set, currentThreadUrl } = this.props
-        var relativeThreadUrl = ""
-        if (currentThreadUrl){
-            relativeThreadUrl = getUrl(currentThreadUrl)
-        }
-        else{
-            relativeThreadUrl = ""
-        }
+    componentDidMount() {
+        const { currentThreadUrl } = this.props
 
-        const threadsDropDown = thread_set.map((thread, index) => {
-            
-            if (getUrl(thread.url) === relativeThreadUrl){
-                return (
-                    <option selected value={thread.url}>{thread.name}</option>
-                )
-            }
-            else return (
-                <option value={thread.url}>{thread.name}</option>
-            )
+        this.setState({
+            thread: getUrl(currentThreadUrl)
         })
+    }
+
+
+
+    render() {
+        const { thread_set } = this.props
 
         return (
             <div>
@@ -300,9 +566,9 @@ class UserWritePost extends Component {
                                         onChange={this.handleChange_content} />
                                 </div>
 
-                                <select class="form-select" aria-label="thread select" onChange={this.handleChange_thread}>
-                                    {threadsDropDown}
-                                </select>
+                                <div className="pt-1">
+                                    <ThreadDropDown thread_set={thread_set} currentThread={this.state.thread} handleChange={this.handleChange_thread} />
+                                </div>
 
 
 
@@ -340,7 +606,10 @@ class UserPanel extends Component {
         }
         else {
             return (
-                <UserLogin verifyLogin={verifyLogin} />
+                <div>
+                    <UserLogin verifyLogin={verifyLogin} />
+                    <UserSignup verifyLogin={verifyLogin} />
+                </div>
             )
         }
 

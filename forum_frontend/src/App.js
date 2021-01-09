@@ -14,9 +14,9 @@ class App extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            threadsListUrl: "http://localhost:8000/api/forum/threads/",
+            threadsListUrl: "/api/forum/threads/",
             currentPostUrl: "",
-            currentThreadUrl: "http://localhost:8000/api/forum/threads/4/",
+            currentThreadUrl: "/api/forum/threads/1/",
             thread_set: [
                 {
                     url: "",
@@ -164,40 +164,74 @@ class App extends Component {
                     'Authorization': token
                 },
             })
-                .then((response) => {
-                    const status = response.status
-                    // Login in success
-                    if (status === 200) {
-                        response.json()
-                            .then((responseData) => {
-                                this.setState({
-                                    userData: {
-                                        isLogin: true,
-                                        userprofileData: {
-                                            username: responseData.username
-                                        }
-                                    },
-                                })
-
-                            })
-                    }
-                    else {   //handle login error
-                        this.setState({
-                            userData: {
-                                isLogin: false,
-                                userprofileData: {
-                                    username: ""
-                                }
-                            },
-                        })
-                    }
+                .then(response=>response.json())
+                .then((responseData)=>{
+                    this.setState({
+                        userData: {
+                            isLogin: true,
+                            userprofileData: {
+                                username: responseData.username
+                            }
+                        },
+                    })
                 })
+                .catch((error)=>{
+                    console.log(error)
+                    this.setState({
+                        userData: {
+                            isLogin: false,
+                            userprofileData: {
+                                username: ""
+                            }
+                        },
+                    })
+                })
+
+                // .then((response) => {
+                //     const status = response.status
+                //     // Login in success
+                //     if (status === 200) {
+                //         response.json()
+                //             .then((responseData) => {
+                //                 this.setState({
+                //                     userData: {
+                //                         isLogin: true,
+                //                         userprofileData: {
+                //                             username: responseData.username
+                //                         }
+                //                     },
+                //                 })
+
+                //             })
+                //     }
+                //     else {   //handle login error
+                //         console.log("set user to unknow")
+                //         this.setState({
+                //             userData: {
+                //                 isLogin: false,
+                //                 userprofileData: {
+                //                     username: ""
+                //                 }
+                //             },
+                //         })
+                //     }
+                // })
+        }
+        else{
+            this.setState({
+                userData: {
+                    isLogin: false,
+                    userprofileData: {
+                        username: ""
+                    }
+                },
+            })
         }
 
 
     }
 
-    logout = () => {
+    logout() {
         const cookie = new Cookies()
         cookie.remove("token")
         this.verifyLogin()

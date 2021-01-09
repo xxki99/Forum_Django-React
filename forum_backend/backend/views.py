@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Comment, Thread, UserProfile, Post
 from .serializers import CommentSerializer, PostListSerializer, PostDetailSerializer, ThreadDetailSerializer, ThreadSerializer, UserProfileSerializer
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework import mixins
 from .permission import IsAdminOrReadOnly
 from rest_framework.decorators import action, permission_classes
@@ -62,16 +62,28 @@ Post viewset (include create post, retrieve post and list)
 This viewset also included a postComment (subjected to be changed) method for leaving comment without selecting the post. 
 Not sure this is useful or not, it can be done in the cliend side application
 """
-class PostViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class PostViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset=Post.objects.all()
     serializer_class=PostDetailSerializer
     permission_classes=[IsAuthenticatedOrReadOnly]
+
+    #change the permission class to admin user only for deleting post
+    def get_permissions(self):
+        if self.action ==  "destroy":
+            destroy_permission_classes = [IsAdminUser]
+            return [permission() for permission in destroy_permission_classes]
+        else:
+            return super().get_permissions()
 
     def list(self, request):
         queryset=Post.objects.all().annotate(latestCommentDate=Max("comment__pub_date")).order_by("-latestCommentDate")
         
         serializer=PostListSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
+    
+    
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
     
     def get_queryset(self):
         posts=Post.objects.all()
@@ -115,7 +127,7 @@ Overrided retrieve (thread-detail) for changing the serializer
 The list serializer is the 'ThreadSerializer', this serializer is for the list view, it does not include the post_set field
 The detail serializer includes post_set field
 """
-class ThreadViewset(viewsets.ModelViewSet):
+class ThreadViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset=Thread.objects.all()
     serializer_class=ThreadSerializer
     permission_classes=[IsAdminOrReadOnly]
