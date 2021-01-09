@@ -146,10 +146,11 @@ class PostContainer extends Component {
         const {authorData} = this.state
         const { postData, commonStyle } = this.props
         const { comment_set, title } = postData
+        const col = " col-9 "
 
         if (title !== "") {
             return (
-                <div className={"wrapper col" + commonStyle}>
+                <div className={"wrapper " + col + commonStyle}>
                     <div className="list-group-item">
                         <h3>{title}</h3>
                     </div>
@@ -162,7 +163,7 @@ class PostContainer extends Component {
         }
         else {
             return (
-                <div className={"wrapper col-9" + commonStyle}>
+                <div className={"wrapper" + col + commonStyle}>
                 </div>
             )
         }

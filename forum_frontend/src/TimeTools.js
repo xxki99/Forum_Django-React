@@ -7,7 +7,7 @@ function CalTimeInterval(time_text) {
     if (time_text === "") {
         return ""
     }
-    console.log(time_text)
+    
     const now = new Date()
     const now_utc = GetNowInUTC(now)
     const pub_date = new Date(Date.parse(time_text))

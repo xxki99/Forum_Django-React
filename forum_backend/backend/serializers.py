@@ -1,16 +1,17 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.serializers import Serializer
+from rest_framework.validators import UniqueValidator
 from .models import UserProfile, Thread, Post, Comment
 from django.contrib.auth.models import User
 from rest_framework.exceptions import NotAuthenticated
-from django.db.models import Max
+from django.db.models import Max, query
 
 
 class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     #url=serializers.HyperlinkedIdentityField(view_name="forumAPI:userprofile-detail")
-    username=serializers.CharField(source="user.username")
-    email=serializers.EmailField(source="user.email")
+    username=serializers.CharField(source="user.username", validators=[UniqueValidator(queryset=User.objects.all())])
+    email=serializers.EmailField(source="user.email", validators=[UniqueValidator(queryset=User.objects.all())])
     password=serializers.CharField(write_only=True)
     #post_set=serializers.HyperlinkedRelatedField(view_name="forumAPI:post-detail", read_only=True, many=True)
     post_set_url = serializers.SerializerMethodField()
@@ -38,10 +39,13 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
         user.email=email
         user.set_password(password)
         userprofile=UserProfile(**validated_data)
-        userprofile.user=user
         user.save()
+        userprofile.user=user
         userprofile.save()
+
         return userprofile
+
+        
     
     #Create a function for getting user post data url
     def get_post_set_url(self, obj):
