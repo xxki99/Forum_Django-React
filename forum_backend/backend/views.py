@@ -1,7 +1,7 @@
 from typing import Dict
 from django.contrib.auth.models import User
 from django.db.models import query
-from django.http.response import Http404
+from django.http.response import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -10,6 +10,8 @@ from rest_framework.views import APIView
 from .models import Comment, Thread, UserProfile, Post
 from .serializers import CommentSerializer, PostListSerializer, PostDetailSerializer, ThreadDetailSerializer, ThreadSerializer, UserProfileSerializer
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import mixins
 from .permission import IsAdminOrReadOnly
 from rest_framework.decorators import action, permission_classes
@@ -21,18 +23,66 @@ from django.db.models import Max
 # Create your views here.
 
 """
+sandbox viewset
+"""
+"""
+class SandBoxViewset(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset=UserProfile.objects.all()
+    serializer_class=UserProfileSerializer
+    permission_classes=[AllowAny]
+
+    def list(self, request, *args, **kwargs):
+        if request.auth:
+            print("request auth")
+        else:
+            print("unknow user")
+
+        if "Authorization" in request.COOKIES:
+            token = request.COOKIES["Authorization"]
+            print(token)
+        else:
+            response = HttpResponse(status=status.HTTP_200_OK, content={"detail": "set token"})
+            testingToken = "testing token"
+            response.set_cookie("Authorization", "Token %s"%(testingToken))
+            return response
+
+        return Response({"detail": "testint sandbox"}, status=status.HTTP_200_OK)
+"""
+
+
+
+"""
 Auth
+This class is inherit from ObtainAuthToken, 
+the parent class included a view for "post" method for login (post with body object, which contain username and password)
+
+This child class add get method for verifying token (get with {Authorization: token} headers)
+not sure using "get" method is right for this use, subject to change
+
 """
 class CustomObtainAuthToken(ObtainAuthToken):
-    def get(self, request, foramt=None):
+    # prevent return 403, which lead to signin dialog when using browser
+    def get_invalidTokenResponse(self):
+            returnData = {"Token": "Invalid Token"}
+            print("return invalid response")
+            return Response(returnData, status=status.HTTP_400_BAD_REQUEST) 
+
+    # override handle-exception, in order to prevent return 403
+    def handle_exception(self, exc):
+        if (type(exc) == AuthenticationFailed):
+            return self.get_invalidTokenResponse()
+        return super().handle_exception(exc)
+
+    def get(self, request, format=None):
+        print("auth token get")
         if (request.auth):
             user = request.user
-            returnValue = {
-                "username": user.username
-            }
-            return Response(returnValue, status=status.HTTP_200_OK)
+            serializers = UserProfileSerializer(user.userprofile)
+            return Response(serializers.data, status=status.HTTP_200_OK)
         else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return self.get_invalidTokenResponse()
+
+    
 
 """
 Customized viewset for userprofile

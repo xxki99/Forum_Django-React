@@ -29,7 +29,7 @@ class Post(models.Model):
         return self.title
     
     def getLatestCommentDate(self):
-        return Comment.objects.get(post = self).order_by("-pub_date")[0]
+        return Comment.objects.filter(post=self).order_by("-pub_date")[0].pub_date
     
     
 
