@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { makeStyles, Box, Grid, Paper } from '@material-ui/core';
+import { makeStyles, Box, Grid, Paper, Drawer, Typography } from '@material-ui/core';
 import Nav from "./Nav"
 import Viewer from "./Viewer"
 import { LoginModal, UserProfileModal, WritePostModal, WriteCommentModal, SignupModal } from "./User"
@@ -38,7 +38,7 @@ function App() {
     }
     const [userInfo, setUserInfo] = useState(defaultUserInfo)
 
-    
+
 
     // verify login by token
     const resetUserInfo = () => {
@@ -54,7 +54,7 @@ function App() {
             .then((data) => {
                 setUserInfo(data)
             })
-            .catch((error)=>{
+            .catch((error) => {
                 console.log(error)
                 resetUserInfo()
             })
@@ -164,7 +164,18 @@ function App() {
     const handleClose_writecomment = () => {
         setOpen_writecomment(false)
     }
-    
+
+
+
+    // threads drawer
+    const [dopen_thread, setOpen_thread] = useState(false)
+    const handleOpen_thread = () => {
+        setOpen_thread(true)
+    }
+    const handleClose_thread = () => {
+        setOpen_thread(false)
+    }
+
 
 
 
@@ -179,7 +190,7 @@ function App() {
             return (
                 <React.Fragment>
                     <UserProfileModal open={mopen_userprofile} handleClose={handleClose_userprofile} userInfo={userInfo} verifyLogin={verifyLogin} setThreadUrl={setThreadUrl} />
-                    <WritePostModal open={mopen_writepost} handleClose={handleClose_writepost} threadUrl = {threadUrl} threadNavData={threadNavData} />
+                    <WritePostModal open={mopen_writepost} handleClose={handleClose_writepost} threadUrl={threadUrl} threadNavData={threadNavData} />
                     <WriteCommentModal open={mopen_writecomment} handleClose={handleClose_writecomment} postUrl={postUrl} />
                 </React.Fragment>
             )
@@ -190,7 +201,7 @@ function App() {
                     <LoginModal open={mopen_login} handleClose={handleClose_login} verifyLogin={verifyLogin} handleOpen_signup={handleOpen_signup} />
                     <SignupModal open={mopen_sign} handleClose={handleClose_signup} verifyLogin={verifyLogin} ></SignupModal>
                 </React.Fragment>
-                
+
             )
 
         }
@@ -199,28 +210,46 @@ function App() {
     const handleOpenObj = {
         login: handleOpen_login,
         userprofile: handleOpen_userprofile,
-        writepost: handleOpen_writepost, 
+        writepost: handleOpen_writepost,
+        thread: handleOpen_thread,
+    }
+
+    const threadNavObj = {
+        open: dopen_thread, 
+        onClose: handleClose_thread, 
+
     }
 
     return (
-        <Box width={"80%"} margin="auto" alignItems="center" >
-            <Grid container spacing={0} className={classes.root}>
+        <React.Fragment>
+            <Box width={"80%"} margin="auto" alignItems="center" id="appContainer" >
+                <Grid container spacing={0} className={classes.root}>
 
-                <Paper variant="outlined" className={classes.nav} >
-                    <Nav handleClick_post={setPostUrl} handleOpenObj={handleOpenObj} userInfo={userInfo} threadUrl={threadUrl} />
-                </Paper>
+                    <Paper variant="outlined" className={classes.nav} >
+                        <Nav handleClick_post={setPostUrl} handleOpenObj={handleOpenObj} userInfo={userInfo} threadUrl={threadUrl} 
+                        threadNavData={threadNavData} threadNavObj = {threadNavObj}
+                        />
+                    </Paper>
 
-                <Paper variant="outlined" className={classes.viewer}>
-                    <Viewer postUrl={postUrl} handleOpen_writecomment={handleOpen_writecomment} />
-                </Paper>
+                    <Paper variant="outlined" className={classes.viewer}>
+                        <Viewer postUrl={postUrl} handleOpen_writecomment={handleOpen_writecomment} handleOpen_login={handleOpen_login} userInfo={userInfo} />
+                    </Paper>
 
-            </Grid>
+                </Grid>
 
+
+                
+
+            </Box>
+
+            {/*render modal*/}
             {
                 modalRender()
             }
 
-        </Box>
+
+
+        </React.Fragment>
     )
 }
 

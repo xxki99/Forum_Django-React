@@ -1,4 +1,4 @@
-import { Box, Typography, Paper, IconButton, makeStyles, Card, CardContent, Grid, ButtonBase, Button } from "@material-ui/core"
+import { Box, Typography, Paper, IconButton, makeStyles, Card, CardContent, Grid, ButtonBase, Button, Drawer, ListItem, List } from "@material-ui/core"
 
 // icon
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react"
 import { CalTimeInterval } from "./TimeTools"
 import { getUrl } from "./UrlTools"
 
-import {getThreadDetailData, writePost} from "./ForumAPI"
+import { getThreadDetailData, writePost } from "./ForumAPI"
 
 // override style here
 const usestyles = makeStyles({
@@ -26,7 +26,7 @@ const usestyles = makeStyles({
     },
     postItem_root: {
         width: "100%",
-        marginBottom: "1px", 
+        marginBottom: "1px",
     },
     postItem_button: {
         width: "100%",
@@ -86,7 +86,7 @@ function ControlPanel({ threadName, handleOpenObj, userInfo }) {
 
             <Grid container justify="space-between">
                 <Grid item className={classes.controlPanel_threadName}>
-                    <Button>
+                    <Button onClick={handleOpenObj.thread}>
                         <Typography variant="h6">{threadName}</Typography>
                         {/* {threadName} */}
                     </Button>
@@ -171,7 +171,28 @@ function PostList({ post_set, handleClick }) {
 }
 
 // component
-function Nav({ handleClick_post, handleOpenObj, userInfo, threadUrl }) {
+function ThreadNavDrawer({ open, onClose, threadNavData }) {
+    const threadlist = threadNavData.map((thread, index) => {
+        return (
+            <ListItem key={index}>
+                <Button>
+                    {thread.name}
+                </Button>
+            </ListItem>
+        )
+    })
+
+    return (
+        <Drawer open={open} onClose={onClose} anchor="left" >
+            <List>
+                {threadlist}
+            </List>
+        </Drawer>
+    )
+}
+
+// component
+function Nav({ handleClick_post, handleOpenObj, userInfo, threadUrl, threadNavData, threadNavObj }) {
     // hooks: threadurl
     useEffect(() => {
         if (threadUrl === "") {
@@ -187,7 +208,7 @@ function Nav({ handleClick_post, handleOpenObj, userInfo, threadUrl }) {
                     console.log(`fetch thread data error: ${error}`)
                     setThreadData(defaultThreadData)
                 })
-            
+
         }
 
     }, [threadUrl])
@@ -197,10 +218,13 @@ function Nav({ handleClick_post, handleOpenObj, userInfo, threadUrl }) {
 
     // return render
     return (
-        <Box>
-            <ControlPanel threadName={threadData.name} handleOpenObj = {handleOpenObj} userInfo={userInfo} />
-            <PostList post_set={threadData.post_set} handleClick={handleClick_post} />
-        </Box>
+        <React.Fragment>
+            <Box>
+                <ControlPanel threadName={threadData.name} handleOpenObj={handleOpenObj} userInfo={userInfo} />
+                <PostList post_set={threadData.post_set} handleClick={handleClick_post} />
+            </Box>
+            <ThreadNavDrawer open={threadNavObj.open} onClose={threadNavObj.onClose} threadNavData={threadNavData} />
+        </React.Fragment>
     )
 }
 
