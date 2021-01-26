@@ -62,88 +62,72 @@ function SignupModal({ open, handleClose, verifyLogin }) {
         
     }
 
-    const title = () => {
-        return (
-            <Grid>
-                Signup
-            </Grid>
-        )
-    }
+    return (
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            maxWidth="xs"
+        >
+            {/* title */}
+            <DialogTitle id="alert-dialog-title">
+                {"Signup"}
+            </DialogTitle>
 
-    const content = () => {
-        return (
-            <React.Fragment>
+            {/* content */}
+            <DialogContent>
 
-            
-
-            <div className={classes.modal}>
-                <Grid container spacing={2} >
-    
-                    <Grid item xs={10}>
                         <TextField
-                            fullWidth
-                            id="signupUsernameInputTextField"
+                            autoFocus
+                            margin="dense"
+                            id="usernameinput-signup"
                             label="Username"
-                            rows={1}
-                            defaultValue=""
+                            type="text"
+                            fullWidth
                             onChange={handleChange_username}
                         />
-                    </Grid>
     
     
-                    <Grid item xs={10}>
                         <TextField
-                            fullWidth
-                            id="signupPasswordInputTextField"
-                            label="Password"
+                            autoFocus
+                            margin="dense"
+                            id="passwordinput-signup"
+                            label="Username"
                             type="password"
-                            rows={1}
-                            defaultValue=""
+                            fullWidth
                             onChange={handleChange_password}
                         />
-                    </Grid>
     
-                    <Grid item xs={10}>
                         <TextField
-                            fullWidth
-                            id="signupConfirmPasswordInputTextField"
-                            label="Confirm Password"
+                            autoFocus
+                            margin="dense"
+                            id="passwordConfirminput-signup"
+                            label="Confrim your password"
                             type="password"
-                            rows={1}
-                            defaultValue=""
+                            fullWidth
                             onChange={handleChange_confirmPassword}
                         />
-                    </Grid>
     
-                    <Grid item xs={10}>
                         <TextField
-                            fullWidth
-                            id="signupEmailInputTextField"
+                            autoFocus
+                            margin="dense"
+                            id="emailinput-singup"
                             label="Email"
-                            rows={1}
-                            defaultValue=""
+                            type="text"
+                            fullWidth
                             onChange={handleChange_email}
                         />
-                    </Grid>
-    
-                </Grid>
-            </div>
 
-            </React.Fragment>
+            </DialogContent>
 
-        )
-    }
-
-    const actions = () => {
-        return (
-            <Button onClick={handleClick_signup}>
-                Signup
-            </Button>
-        )
-    }
-
-    return (
-        <CommonDialog open={open} handleClose={handleClose} title={title()} content={content()} actions={actions()} fullWidth={false} />
+            {/* footer */}
+            <DialogActions>
+                <Button onClick={handleClick_signup}>
+                    Signup
+                </Button>
+            </DialogActions>
+        </Dialog>
     )
 }
 

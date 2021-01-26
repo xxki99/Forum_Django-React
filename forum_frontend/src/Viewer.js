@@ -63,10 +63,13 @@ function CommentCard({ comment }) {
                             </Typography>
                         </Tooltip>
                     </Grid>
+                    <Grid item xs={12}>
+                        <Typography variant="body1">
+                            {comment.content}
+                        </Typography>
+                    </Grid>
                 </Grid>
-                <Typography variant="body1">
-                    {comment.content}
-                </Typography>
+                
             </CardContent>
         </Card>
     )
@@ -86,8 +89,17 @@ function CommentSet({ comment_set }) {
 
 
 // component
-function Viewer({postUrl, handleOpen_writecomment}) {
+function Viewer({postUrl, handleOpen_writecomment, handleOpen_login, userInfo}) {
     const classes = usestyles()
+
+    const handleClick_reply = () => {
+        if (userInfo.isLogin){
+            handleOpen_writecomment()
+        }
+        else{
+            handleOpen_login()
+        }
+    }
 
     const [postData, setPostData] = useState(defaultPostData)
     useEffect(() => {
@@ -131,7 +143,7 @@ function Viewer({postUrl, handleOpen_writecomment}) {
                             </Typography>
                         </Box>
                         <Box>
-                            <IconButton onClick={handleOpen_writecomment}>
+                            <IconButton onClick={handleClick_reply}>
                                 <ReplyIcon className={classes.titlePanel_replyButton}/>
                             </IconButton>
                         </Box>
