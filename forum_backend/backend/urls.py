@@ -9,12 +9,14 @@ forum_router.register(r'threads', views.ThreadViewset)
 forum_router.register(r'posts', views.PostViewset)
 forum_router.register(r'comment', views.CommentViewset)
 
+# forum_router.register(r'sandbox', views.SandBoxViewset)
+
 forumRouterUrls = forum_router.urls
 
 
 
 authUrls = [
-    path('token/', views.CustomObtainAuthToken.as_view(), name="token")
+    path('token/', views.CustomObtainAuthToken.as_view(), name="token"), 
 ]
 
 

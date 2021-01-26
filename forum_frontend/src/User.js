@@ -1,619 +1,432 @@
-import React, { Component } from "react"
-import Cookies from 'universal-cookie'
-import bootstrap from "bootstrap"
-import $ from "jquery"
+import React, { useState } from "react"
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Grid, Box } from "@material-ui/core"
+import { makeStyles } from "@material-ui/styles"
 import { getUrl } from "./UrlTools"
-import { TextInput } from "./InputComponents"
+import Cookies from "universal-cookie"
+import { CommonDialog, ThreadsSelect } from "./CommonlyUsedComponent"
+import { ConvertTimeToString } from "./TimeTools"
+import { login, writePost, writeComment, signup } from "./ForumAPI"
 
-const userIconStyle = {
-    fontSize: "1.55em",
-}
+const useStyles = makeStyles({
+    modal: {
+        width: "600px", 
+    }
+})
 
-const loginUrl = "/api/auth/token/"
-const signupUrl = "/api/forum/users/"
-const writePostUrl = "/api/forum/posts/"
-const signupModalID = "signupModal"
-const loginModalID = "loginModal"
 
-class UserLogin extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            username: "",
-            password: "",
-            errorText: {
-                username: "",
-                password: ""
-            },
+
+function SignupModal({ open, handleClose, verifyLogin }) {
+    const classes = useStyles()
+
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [email, setEmail] = useState("")
+
+    const handleChange_username = (e) => {
+        setUsername(e.target.value)
+    }
+
+    const handleChange_password = (e) => {
+        setPassword(e.target.value)
+    }
+
+    const handleChange_confirmPassword = (e) => {
+        setConfirmPassword(e.target.value)
+    }
+
+    const handleChange_email = (e) => {
+        setEmail(e.target.value)
+    }
+
+    const handleClick_signup = () => {
+        if (password === confirmPassword){
+            performSignup()
+            handleClose()
         }
-
-        this.handleUsernameChange = this.handleUsernameChange.bind(this)
-        this.handlePasswordChange = this.handlePasswordChange.bind(this)
-        this.submitLoginForm = this.submitLoginForm.bind(this)
-        this.toggleLoginModal = this.toggleLoginModal.bind(this)
-        this.toggleSignupModal = this.toggleSignupModal.bind(this)
-        this.resetInput = this.resetInput.bind(this)
-    }
-
-    usernameInputID = "usernameInput"
-    passwordInputID = "passwordInput"
-
-    resetInput(){
-        $("#" + this.usernameInputID).val("")
-        $("#" + this.passwordInputID).val("")
-        this.setState(
-            {
-                username: "", 
-                password: "", 
-            }
-        )
-    }
-
-    submitLoginForm(event) {
-        const { username, password } = this.state
-        const bodyObj = {
-            username: username,
-            password: password
+        else{
+            // handle not match
         }
-
-        fetch(getUrl(loginUrl), {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bodyObj)
-        })
-            .then((response) => {
-                if (response.ok) {
-                    response.json()
-                        .then((responseData) => {
-                            console.log(responseData)
-                            const cookies = new Cookies()
-                            cookies.set("token", "Token " + responseData.token)
-                            $("#" + loginModalID).modal("hide")
-                            this.props.verifyLogin()
-                        })
-                }
-                else {
-                    response.json().then((responseData) => {
-                        console.log(responseData)
-
-                        this.setState(
-                            {
-                                errorText: responseData
-                            }
-                        )
-
-
-                    })
-                }
-                this.resetInput()
-            })
+        
     }
 
-    toggleLoginModal(){
-        $("#" + loginModalID).modal("toggle")
+    const performSignup = async () => {
+
+        await signup(username, password, email)
+        
+        await login(username, password)
+        
+        verifyLogin()
+        handleClose()
+        
+        
     }
 
-    toggleSignupModal() {
-        $("#" + loginModalID).modal("hide")
-        $("#" + signupModalID).modal("toggle")
-    }
-
-    handleUsernameChange(event) {
-        this.setState(
-            {
-                username: event.target.value
-            }
-        )
-    }
-
-    handlePasswordChange(event) {
-        this.setState(
-            {
-                password: event.target.value
-            }
-        )
-    }
-
-    render() {
-        const { errorText } = this.state
+    const title = () => {
         return (
-            <div className="">
-                <button type="button" className="btn p-0 pt-1" onClick={this.toggleLoginModal}>
-                    <i className="fas fa-user-secret" style={userIconStyle}></i>
-                </button>
-                <div className="modal fade" id={loginModalID} tabIndex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
-                    <div className="modal-dialog modal-dialog-centered" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="LoginModelLabel">User Login</h5>
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div className="modal-body">
-
-                                <div>
-                                    <small className="text-danger">{errorText.non_field_errors}</small>
-                                </div>
-
-                                < TextInput id={this.usernameInputID} labelText="Username:" type="text" placeholder="Username"
-                                    handleChange={this.handleUsernameChange} errorText={errorText.username} />
-
-                                < TextInput id={this.passwordInputID} labelText="Password:" type="password" placeholder="Password"
-                                    handleChange={this.handlePasswordChange} errorText={errorText.password} />
-
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" onClick={this.submitLoginForm}>Login</button>
-                                <button type="button" className="btn btn-primary" onClick={this.toggleSignupModal} >Sign-up</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-}
-
-class UserSignup extends Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            username: "",
-            password: "",
-            email: "",
-            confirmPassword: "",
-            errorText: {
-                non_field_errors: "",
-                username: "",
-                password: "",
-                email: "",
-                confirmPassword: ""
-            },
-        }
-
-        this.handleChange_username = this.handleChange_username.bind(this)
-        this.handleChange_password = this.handleChange_password.bind(this)
-        this.handleChange_email = this.handleChange_email.bind(this)
-        this.handleChange_confirmPassword = this.handleChange_confirmPassword.bind(this)
-        this.handleSignup = this.handleSignup.bind(this)
-        this.resetInput = this.resetInput.bind(this)
-        this.checkValidInput = this.checkValidInput.bind(this)
-
-    }
-
-    emailInputID = "emailInput_signup"
-    usernameInputID = "usernameInput_signup"
-    passwordInputID = "passwordInput_signup"
-    confirmPasswordInputID = "confirmPasswordInput_signup"
-    inputList = [this.emailInputID, this.usernameInputID, this.passwordInputID, this.confirmPasswordInputID]
-
-    resetInput(){
-        this.inputList.forEach((e)=>{
-            $("#" + e).val("")
-        })
-        this.setState(
-            {
-                username: "", 
-                password: "", 
-                confirmPassword: "", 
-                email: "", 
-            }
+            <Grid>
+                Signup
+            </Grid>
         )
     }
 
-    handleChange_username(e) {
-        this.setState(
-            {
-                username: e.target.value
-            }
-        )
-    }
-
-    handleChange_email(e) {
-        this.setState(
-            {
-                email: e.target.value
-            }
-        )
-    }
-
-    handleChange_password(e) {
-        this.setState(
-            {
-                password: e.target.value
-            }
-        )
-    }
-
-    handleChange_confirmPassword(e) {
-        this.setState(
-            {
-                confirmPassword: e.target.value
-            }
-        )
-    }
-
-    dismissSignupModal() {
-        $("#" + signupModalID).modal("hide")
-    }
-
-    checkValidInput() {
-        const { email, username, password, confirmPassword } = this.state
-        console.log("checking signup input valid")
-
-        var returnValue = {
-            isValid: true,
-            errorText: {
-                non_field_errors: "",
-                email: "",
-                username: "",
-                password: "",
-                confirmPassword: "",
-            }
-        }
-
-        // checking confirm password
-        if (password !== confirmPassword) {
-            returnValue.isValid = false
-            returnValue.errorText.confirmPassword = "Password do not match."
-        }
-
-        // checking email
-        if (!email.includes("@")) {
-            returnValue.isValid = false
-            returnValue.errorText.email = "Email must include @."
-        }
-
-        return returnValue
-    }
-
-    handleSignup() {
-        const { email, username, password } = this.state
-        const { verifyLogin } = this.props
-
-        // custom validation
-        // check for confirm password
-        const checkValidObj = this.checkValidInput()
-
-        if (checkValidObj.isValid) {
-            const bodyObj = {
-                username: username,
-                password: password,
-                email: email,
-            }
-
-            fetch(signupUrl, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(bodyObj)
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        response.json()
-                            .then((responseData) => {
-                                this.dismissSignupModal()
-                            })
-                            .then(() => {
-                                // login, will be changed in the future (create a login function in parent component and pass down to UserLogin and UserSignup)
-                                const loginBodyObj = {
-                                    username: username,
-                                    password: password
-                                }
-                                fetch(getUrl(loginUrl), {
-                                    method: "POST",
-                                    headers: {
-                                        'Accept': 'application/json',
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify(loginBodyObj)
-                                })
-                                    .then((response) => {
-                                        if (response.ok) {
-                                            response.json()
-                                                .then((responseData) => {
-                                                    const cookies = new Cookies()
-                                                    cookies.set("token", "Token " + responseData.token)
-                                                    verifyLogin()
-                                                    this.dismissSignupModal()
-                                                })
-                                        }
-                                        else {
-                                            console.log("login after signup error")
-                                        }
-                                    })
-                            })
-                    }
-                    else {
-                        response.json()
-                            .then((errorData) => {
-                                this.setState(
-                                    {
-                                        errorText: errorData
-                                    }
-                                )
-                            })
-                    }
-                    this.resetInput()
-                })
-
-        }
-        else {  // handle invalid input
-            this.setState({
-                errorText: checkValidObj.errorText
-            })
-        }
-    }
-
-
-
-    render() {
-        const { errorText } = this.state
+    const content = () => {
         return (
-            <div className="modal fade" id="signupModal" tabIndex="-1" role="dialog" aria-labelledby={signupModalID} aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="userProfileModelLabel">Sign up</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <div>
-                                <p className="text-danger">
-                                    {errorText.non_field_errors}
-                                </p>
-                            </div>
+            <React.Fragment>
 
-                            <TextInput id={this.emailInputID} labelText="Email:" type="text" placeholder="Email"
-                                errorText={errorText.email} handleChange={this.handleChange_email} />
-                            <TextInput id={this.usernameInputID} labelText="Username:" type="text" placeholder="Username"
-                                errorText={errorText.username} handleChange={this.handleChange_username} />
-                            <TextInput id={this.passwordInputID} labelText="Password:" type="password" placeholder="Password"
-                                errorText={errorText.password} password handleChange={this.handleChange_password} />
-                            <TextInput id={this.confirmPasswordInputID} labelText="Confirm your password:" type="password" placeholder="Password"
-                                errorText={errorText.confirmPassword} confirmPassword handleChange={this.handleChange_confirmPassword} />
+            
 
-
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-primary" onClick={this.handleSignup} >Signup</button>
-                        </div>
-                    </div>
-                </div>
+            <div className={classes.modal}>
+                <Grid container spacing={2} >
+    
+                    <Grid item xs={10}>
+                        <TextField
+                            fullWidth
+                            id="signupUsernameInputTextField"
+                            label="Username"
+                            rows={1}
+                            defaultValue=""
+                            onChange={handleChange_username}
+                        />
+                    </Grid>
+    
+    
+                    <Grid item xs={10}>
+                        <TextField
+                            fullWidth
+                            id="signupPasswordInputTextField"
+                            label="Password"
+                            type="password"
+                            rows={1}
+                            defaultValue=""
+                            onChange={handleChange_password}
+                        />
+                    </Grid>
+    
+                    <Grid item xs={10}>
+                        <TextField
+                            fullWidth
+                            id="signupConfirmPasswordInputTextField"
+                            label="Confirm Password"
+                            type="password"
+                            rows={1}
+                            defaultValue=""
+                            onChange={handleChange_confirmPassword}
+                        />
+                    </Grid>
+    
+                    <Grid item xs={10}>
+                        <TextField
+                            fullWidth
+                            id="signupEmailInputTextField"
+                            label="Email"
+                            rows={1}
+                            defaultValue=""
+                            onChange={handleChange_email}
+                        />
+                    </Grid>
+    
+                </Grid>
             </div>
+
+            </React.Fragment>
+
         )
     }
-}
 
-function UserProfile(props) {
-    const { userprofileData, logout } = props
-    const { username } = userprofileData
+    const actions = () => {
+        return (
+            <Button onClick={handleClick_signup}>
+                Signup
+            </Button>
+        )
+    }
+
     return (
-        <div className="">
-            <button type="button" className="btn p-0" data-toggle="modal" data-target="#userProfileModal">
-                <i className="fas fa-user-check" style={userIconStyle}></i>
-            </button>
-
-            <div className="modal fade" id="userProfileModal" tabIndex="-1" role="dialog" aria-labelledby="userProfileModal" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="userProfileModelLabel">{username}</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-
-                            User info here
-
-
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => { logout() }}>Logout</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <CommonDialog open={open} handleClose={handleClose} title={title()} content={content()} actions={actions()} fullWidth={false} />
     )
 }
 
-function ThreadDropDown(props) {
-    const { thread_set, currentThread, handleChange } = props
-    const options = thread_set.map((thread, index) => {
+
+
+function WriteCommentModal({ open, handleClose, postUrl }) {
+    const [commentContent, setCommentContent] = useState("")
+
+    const handleChange_comment = (e) => {
+        setCommentContent(e.target.value)
+    }
+
+    const performWriteComment = () => {
+        writeComment(postUrl, commentContent)
+        handleClose()
+    }
+
+    const title = () => {
         return (
-            <option value={getUrl(thread.url)} key={index}>{thread.name}</option>
+            <Grid>
+                Write a new Comment
+            </Grid>
         )
-    })
+    }
+
+    const content = () => {
+        return (
+            <Grid>
+                <TextField
+                    fullWidth
+                    id="commentContentInputTextField"
+                    label="Comment"
+                    multiline
+                    rows={10}
+                    defaultValue=""
+                    variant="outlined"
+                    onChange={handleChange_comment}
+                />
+            </Grid>
+        )
+    }
+
+    const actions = () => {
+        return (
+            <Button onClick={performWriteComment}>
+                Comment
+            </Button>
+        )
+    }
+
     return (
-        <select value={currentThread} onChange={handleChange}>
-            {options}
-        </select>
+        <CommonDialog open={open} handleClose={handleClose} title={title()} content={content()} actions={actions()} />
     )
 }
 
-class UserWritePost extends Component {
-    constructor(props) {
-        super(props)
+function WritePostModal({ open, handleClose, threadNavData, threadUrl }) {
+    const [postTitle, setPostTitle] = useState("")
+    const [postContent, setPostContent] = useState("")
+    const [postThread, setPostThread] = useState(threadUrl)
 
-        this.state = {
-            title: "",
-            content: "",
-            thread: ""
-        }
-
-        this.handleChange_title = this.handleChange_title.bind(this)
-        this.handleChange_content = this.handleChange_content.bind(this)
-        this.handleChange_thread = this.handleChange_thread.bind(this)
-        this.toggleWritePostModel = this.toggleWritePostModel.bind(this)
-        this.performWritePost = this.performWritePost.bind(this)
+    const handleChange_title = (e) => {
+        setPostTitle(e.target.value)
     }
 
-    handleChange_title(e) {
-        this.setState(
-            {
-                title: e.target.value
-            }
+    const handleChange_content = (e) => {
+        setPostContent(e.target.value)
+    }
+
+    const handleChange_thread = (e) => {
+        setPostThread(e.target.value)
+    }
+
+    const performWritePost = () => {
+        console.log("Perform write post")
+        writePost(postThread, postTitle, postContent)
+        handleClose()
+    }
+
+
+    const title = () => {
+        return (
+
+            <Box display="flex">
+                <Box flexGrow={1}>Write a new post</Box>
+                <Box>
+                    <ThreadsSelect id="threadsSelect" defaultThread={threadUrl} threadNavData={threadNavData} selectedThread={postThread} onChange={handleChange_thread} />
+                </Box>
+            </Box>
+
+
         )
     }
 
-    handleChange_content(e) {
-        this.setState(
-            {
-                content: e.target.value
-            }
+    const content = () => {
+        return (
+            <Grid fullWidth container spacing={2}>
+
+                <Grid item xs={12}>
+                    <TextField
+                        fullWidth
+                        id="postTitleInputTextField"
+                        label="Title"
+                        multiline
+                        rows={1}
+                        defaultValue=""
+                        variant="outlined"
+                        onChange={handleChange_title}
+                    />
+                </Grid>
+
+
+                <Grid item xs={12}>
+                    <TextField
+                        fullWidth
+                        id="postContentInputTextField"
+                        label="Content"
+                        multiline
+                        rows={10}
+                        defaultValue=""
+                        variant="outlined"
+                        onChange={handleChange_content}
+                    />
+                </Grid>
+
+            </Grid>
         )
     }
 
-    performWritePost() {
-        const { title, content, thread } = this.state
+    const actions = () => {
+        return (
+            <Grid>
+                <Button onClick={performWritePost}>
+                    Write post
+                </Button>
+            </Grid>
+
+        )
+    }
+
+    return (
+        <CommonDialog open={open} handleClose={handleClose} title={title()} content={content()} actions={actions()} />
+    )
+}
+
+
+function UserProfileModal({ open, handleClose, userInfo, verifyLogin, setThreadUrl }) {
+    const logout = () => {
         const cookies = new Cookies()
-        const token = cookies.get("token")
-        const bodyObj = {
-            title: title,
-            content: content,
-            thread: thread
-        }
-        fetch(writePostUrl, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': token
-            },
-            body: JSON.stringify(bodyObj)
-        }
+        cookies.remove("token")
+        verifyLogin()
+        handleClose()
+    }
+
+    const directToUserPosts = (url) => {
+        setThreadUrl(url)
+        handleClose()
+    }
+
+    const { userData } = userInfo
+    const title = () => {
+        return (
+            <Grid>
+
+                <Typography>
+                    {userData.username}
+                </Typography>
+
+            </Grid>
         )
-            .then(response => response.json())
-            .then((responseData) => {
-                console.log(responseData)
+    }
+
+    const content = () => {
+        return (
+            <Grid>
+
+                <Typography>
+                    {ConvertTimeToString(userData.date_joined)}
+                </Typography>
+
+            </Grid>
+        )
+    }
+
+    const actions = () => {
+        return (
+            <Grid>
+                <Button onClick={() => { directToUserPosts(userData.post_set_url) }}>
+                    Posts
+                </Button>
+                <Button onClick={logout}>
+                    Logout
+                </Button>
+            </Grid>
+
+        )
+    }
+
+    return (
+        <CommonDialog open={open} handleClose={handleClose} title={title()} content={content()} actions={actions()} />
+    )
+}
+
+
+
+function LoginModal({ open, handleClose, verifyLogin, handleOpen_signup }) {
+
+    const [username, setUsername] = useState("")
+
+    const handleChange_username = (e) => {
+        setUsername(e.target.value)
+    }
+
+    const [password, setPassword] = useState("")
+
+    const handleChange_password = (e) => {
+        setPassword(e.target.value)
+    }
+
+    const handleClick_login = () => {
+        performLogin()
+        handleClose()
+    }
+
+    const handleClick_signup = () => {
+        handleClose()
+        handleOpen_signup()
+    }
+
+    const performLogin = () => {
+        login(username, password)
+            .then((data) => {
+                verifyLogin()
+            })
+            .catch((error) => {
+                return
             })
     }
 
-    handleChange_thread(e) {
-        const thread = getUrl(e.target.value)
-        console.log(thread)
-        this.setState(
-            {
-                thread: thread
-            }
-        )
-    }
+    return (
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            {/* title */}
+            <DialogTitle id="alert-dialog-title">{"Login"}</DialogTitle>
 
-    // call this function to toggle the modal and initialize it
-    toggleWritePostModel() {
-        // update the thread when the modal is toggled
-        const relativeThreadUrl = getUrl(this.props.currentThreadUrl)
-        this.setState(
-            {
-                thread: relativeThreadUrl
-            }
-        )
+            {/* content */}
+            <DialogContent>
 
-        // toggle
-        $("#writePostModal").modal("toggle")
-    }
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="usernameinput-login"
+                    label="Username"
+                    type="text"
+                    fullWidth
+                    onChange={handleChange_username}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="passwordinput-login"
+                    label="Password"
+                    type="password"
+                    fullWidth
+                    onChange={handleChange_password}
+                />
 
-    componentDidMount() {
-        const { currentThreadUrl } = this.props
+            </DialogContent>
 
-        this.setState({
-            thread: getUrl(currentThreadUrl)
-        })
-    }
-
-
-
-    render() {
-        const { thread_set } = this.props
-
-        return (
-            <div>
-                <button type="button" className="btn p-0" onClick={this.toggleWritePostModel} >
-                    <i className="fas fa-plus" style={userIconStyle}></i>
-                </button>
-
-                <div className="modal fade" id="writePostModal" tabIndex="-1" role="dialog" aria-labelledby="writePostModal" aria-hidden="true">
-                    <div className="modal-dialog modal-dialog-centered" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="writePostModelLabel">Write a new post</h5>
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div className="modal-body">
-
-                                <label htmlFor="postTitleInput" className="form-label">Title: </label>
-                                <div className="input-group">
-                                    <input type="text" className="form-control" id="postTitleInput" placeholder="Title" aria-label="Title"
-                                        onChange={this.handleChange_title} />
-                                </div>
-
-                                <label htmlFor="contentInput" className="form-label">Content: </label>
-                                <div className="input-group">
-                                    <textarea className="form-control" id="contentInput" aria-label="Content"
-                                        onChange={this.handleChange_content} />
-                                </div>
-
-                                <div className="pt-1">
-                                    <ThreadDropDown thread_set={thread_set} currentThread={this.state.thread} handleChange={this.handleChange_thread} />
-                                </div>
-
-
-
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" onClick={this.performWritePost}>Submit</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-        )
-    }
+            {/* footer */}
+            <DialogActions>
+                <Button onClick={handleClick_signup}>
+                    Signup
+                </Button>
+                <Button onClick={handleClick_login} autoFocus>
+                    Login
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
 }
 
-class UserPanel extends Component {
-
-    render() {
-        const { userData, thread_set, verifyLogin, logout, currentThreadUrl } = this.props
-        const { isLogin } = userData
-        if (isLogin) {
-            const { userprofileData } = userData
-            return (
-                <div className="d-flex mt-1">
-                    <div>
-                        <UserProfile userprofileData={userprofileData} logout={logout} />
-                    </div>
-                    <div className="ml-3">
-                        <UserWritePost thread_set={thread_set} currentThreadUrl={currentThreadUrl} />
-                    </div>
-                </div>
-            )
-        }
-        else {
-            return (
-                <div>
-                    <UserLogin verifyLogin={verifyLogin} />
-                    <UserSignup verifyLogin={verifyLogin} />
-                </div>
-            )
-        }
-
-    }
-}
-
-export default UserPanel
+export { LoginModal, UserProfileModal, WritePostModal, WriteCommentModal, SignupModal }

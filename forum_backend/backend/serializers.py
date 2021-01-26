@@ -81,10 +81,11 @@ class PostListSerializer(serializers.HyperlinkedModelSerializer):
     author=serializers.HyperlinkedRelatedField(view_name="forumAPI:userprofile-detail", read_only=True)
     authorName = serializers.CharField(source="author.user.username", read_only=True)
     thread=serializers.HyperlinkedRelatedField(view_name="forumAPI:thread-detail", read_only=False, queryset=Thread.objects.all())
+    leastcomment_date=serializers.DateTimeField(source="getLatestCommentDate")
 
     class Meta:
         model=Post
-        fields=["url", "title", "author", "authorName", "thread", "pub_date"]
+        fields=["url", "title", "author", "authorName", "thread", "pub_date", "leastcomment_date"]
 
 class PostDetailSerializer(serializers.HyperlinkedModelSerializer):
     url=serializers.HyperlinkedIdentityField(view_name="forumAPI:post-detail")

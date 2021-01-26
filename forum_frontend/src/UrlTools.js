@@ -1,8 +1,9 @@
 const baseUrl = "http://localhost:8000"
 
-function getUrl(absUrl){
-    const relativeUrl = absUrl.replace(baseUrl, "")
-    return relativeUrl
+function getUrl(url){
+    
+    return url.replace(baseUrl, "")
 }
 
 export {getUrl}
+
