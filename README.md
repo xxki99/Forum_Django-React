@@ -1,5 +1,5 @@
 # Forum
- Forum made by Python Django REST Framework & React
+ Forum made with Python Django REST Framework & React
  
 ## Installation
  1. Create a new python virtual environment, active the new virtual environment and install dependencies for backend
