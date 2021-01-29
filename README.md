@@ -20,7 +20,9 @@
  
     `python ./forum_backend/manage.py runserver`
     
- 4. Run the frontend server
+ 4. Change the proxy in forum_frontend/package.json to backend server (default value is "http://localhost:8000/")
+    
+ 5. Run the frontend server
  
     `cd ./forum_frontend`
     
