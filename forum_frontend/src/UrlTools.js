@@ -1,9 +1,12 @@
-const baseUrl = "http://localhost:8000"
+const baseUrl = "http://localhost:8000";
 
-function getUrl(url){
-    
-    return url.replace(baseUrl, "")
+function getUrl(url) {
+    return url.replace(baseUrl, "");
 }
 
-export {getUrl}
+function getPostId(postUrl) {
+    const temp = postUrl.split("/");
+    return temp[temp.length - 2];
+}
 
+export { getUrl, getPostId };
