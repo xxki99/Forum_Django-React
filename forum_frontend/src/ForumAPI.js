@@ -40,6 +40,7 @@ async function fetchData(
         headers: defaultHeaders,
     };
     if (bodyObj !== undefined) {
+        console.log(bodyObj)
         requestObj = {
             ...requestObj,
             body: JSON.stringify(bodyObj),
@@ -150,6 +151,7 @@ async function writeComment(postUrl, content) {
         content: content,
     };
     try {
+        console.log(postUrl)
         const data = await fetchData(writeCommentUrl, "POST", headers, bodyObj);
         return data;
     } catch (error) {

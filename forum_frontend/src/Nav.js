@@ -123,9 +123,8 @@ const PostItem = ({ postItemData, handleClick }) => {
     const timeWidth = 1;
     const postid = getPostId(postItemData.url);
     return (
-        <Link to={`/posts/${postid}`}>
             <Card className={classes.postItem_root}>
-                <ButtonBase className={classes.postItem_button}>
+                <ButtonBase component={Link} to={`/posts/${postid}`} className={classes.postItem_button}>
                     <CardContent className={classes.postItem_button}>
                         <Grid container justify="flex-start">
                             <Grid item xs={12 - timeWidth}>
@@ -152,7 +151,6 @@ const PostItem = ({ postItemData, handleClick }) => {
                     </CardContent>
                 </ButtonBase>
             </Card>
-        </Link>
     );
 };
 

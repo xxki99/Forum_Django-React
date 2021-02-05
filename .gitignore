@@ -1,5 +1,2 @@
-.vscode
-env_forum
-venv
-db.sqlite3
+.vscode/
 

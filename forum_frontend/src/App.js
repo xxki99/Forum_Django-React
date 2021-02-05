@@ -40,7 +40,7 @@ function App() {
     const { postID } = useParams();
     useEffect(() => {
         if (postID !== "") {
-            setPostUrl(`/api/forum/posts/${postID}`);
+            setPostUrl(`/api/forum/posts/${postID}/`);
         }
     }, [postID]);
 
