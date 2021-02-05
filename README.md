@@ -2,15 +2,37 @@
  Forum made with Python Django REST Framework & React
  
 ## Installation
+Clone this repo
+
+`git clone https://github.com/xxki99/Forum_Django-React`
+
+
+Open your terminal and change directory to Forum_Django-React
+`cd ./Forum_Django-React`
+
+## Setup
+
  1. Create a new python virtual environment, active the new virtual environment and install dependencies for backend
  
+    - Create a new virtual environment: 
+    
     `python -m venv {"env name"}`
     
-    Active the new env and install dependencies for backend (requirements.txt is located at ./forum_backend)
+    - Activate environment
+     (On windows): 
+     
+     `{your env path}/Scripts/activate`
+     
+     (On Linux): 
+     `source {your env path}/bin/activate`
     
-    `pip install -r requirements.txt`
     
- 2. Install dependencies for frontend
+    
+    Install dependencies for backend (requirements.txt is located at Forum_Django-React/forum_backend)
+    
+    `pip install -r ./forum_backend/requirements.txt`
+    
+ 2. Change directory to forum_frontend and then install dependencies for frontend
  
     `cd ./forum_frontend`
     
