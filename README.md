@@ -37,8 +37,6 @@ Open your terminal and change directory to Forum_Django-React
     `npm install`
 
  3. Create backend database
-    
-    `python ./forum_backend/manage.py makemigrations`
 
     `python ./forum_backend/manage.py migrate`
 
