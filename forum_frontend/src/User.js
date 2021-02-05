@@ -28,6 +28,13 @@ function UserDetailModal() {}
 function SignupModal({ open, handleClose, verifyLogin }) {
     const classes = useStyles();
 
+    // reset state after handleClose
+    useEffect(() => {
+        setErrorMessage(defaultErrorMessage)
+        setUsername("")
+        setPassword("")
+    }, [open])
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -60,6 +67,12 @@ function SignupModal({ open, handleClose, verifyLogin }) {
             // handle not match
         }
     };
+
+    const handleClick_enter =(e)=>{
+        if (e.keyCode === 13){
+            handleClick_signup()
+        }
+    }
 
     const performSignup = async () => {
         try {
@@ -118,6 +131,7 @@ function SignupModal({ open, handleClose, verifyLogin }) {
 
     return (
         <Dialog
+        onKeyUp={(e) => {handleClick_enter(e)}}
             open={open}
             onClose={handleClose}
             aria-labelledby="alert-dialog-title"
@@ -427,6 +441,12 @@ function LoginModal({ open, handleClose, verifyLogin, handleOpen_signup }) {
         // handleClose();
     };
 
+    const handleClick_enter = (e) => {
+        if (e.keyCode === 13){
+            handleClick_login();
+        }
+    }
+
     const handleClick_signup = () => {
         handleClose();
         handleOpen_signup();
@@ -438,6 +458,7 @@ function LoginModal({ open, handleClose, verifyLogin, handleOpen_signup }) {
         login(username, password)
             .then((data) => {
                 verifyLogin();
+                handleClose();
             })
             .catch((error) => {
                 console.log(error);
@@ -461,6 +482,7 @@ function LoginModal({ open, handleClose, verifyLogin, handleOpen_signup }) {
 
     return (
         <Dialog
+        onKeyUp={(e) => {handleClick_enter(e)}}
             open={open}
             onClose={handleClose}
             aria-labelledby="alert-dialog-title"

@@ -75,6 +75,7 @@ async function getUserLoginState() {
             throw error;
         }
     } catch (error) {
+        console.log(error)
         throw error;
     }
 }
