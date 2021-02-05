@@ -6,7 +6,7 @@
  
     `python -m venv {"env name"}`
     
-    Active the new env
+    Active the new env and install dependencies for backend (requirements.txt is located at ./forum_backend)
     
     `pip install -r requirements.txt`
     
