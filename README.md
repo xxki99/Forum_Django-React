@@ -14,23 +14,19 @@ Open your terminal and change directory to Forum_Django-React
 
  1. Create a new python virtual environment, active the new virtual environment and install dependencies for backend
  
-    - Create a new virtual environment: 
+    1.1 Create a new virtual environment: 
     
-     `python -m venv {"env name"}`
+    `python -m venv {"env name"}`
     
-    - Activate environment
+    1.2 Activate environment
     
-     (On windows): 
+     - (On windows): `{your env path}/Scripts/activate`
      
-      `{your env path}/Scripts/activate`
-     
-     (On Linux): 
-     
-      `source {your env path}/bin/activate`
+     - (On Linux): `source {your env path}/bin/activate`
     
     
     
-    Install dependencies for backend (requirements.txt is located at Forum_Django-React/forum_backend)
+    1.3 Install dependencies for backend (requirements.txt is located at Forum_Django-React/forum_backend)
     
     `pip install -r ./forum_backend/requirements.txt`
     
