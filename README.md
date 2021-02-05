@@ -20,7 +20,7 @@ Open your terminal and change directory to Forum_Django-React
     
     1.2 Activate environment
     
-     - (On windows): `{your env path}/Scripts/activate`
+     - (On windows): `{your env path}\Scripts\activate`
      
      - (On Linux): `source {your env path}/bin/activate`
     
