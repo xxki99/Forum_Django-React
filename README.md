@@ -34,17 +34,21 @@ Open your terminal and change directory to Forum_Django-React
 
     `python ./forum_backend/manage.py migrate`
     
- 3. Change directory to forum_frontend and then install dependencies for frontend
+ 3. Run the backend server
+ 
+    `python ./forum_backend/manage.py runserver`
+    
+ 4. Open a new terminal and change directory to forum_frontend and then install dependencies for frontend
  
     `cd ./forum_frontend`
     
     `npm install`
     
- 4. Run the backend server
- 
-    `python ./forum_backend/manage.py runserver`
+
     
  5. Change the proxy in forum_frontend/package.json to backend server (default value is "http://localhost:8000/")
+ 
+ 
     
  6. Run the frontend server
  
