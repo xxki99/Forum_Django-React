@@ -15,14 +15,21 @@
     `cd ./forum_frontend`
     
     `npm install`
+
+ 3. Create backend database
     
- 3. Run the backend server
+    `python ./forum_backend/manage.py makemigrations`
+
+    `python ./forum_backend/manage.py migrate`
+
+    
+ 4. Run the backend server
  
     `python ./forum_backend/manage.py runserver`
     
- 4. Change the proxy in forum_frontend/package.json to backend server (default value is "http://localhost:8000/")
+ 5. Change the proxy in forum_frontend/package.json to backend server (default value is "http://localhost:8000/")
     
- 5. Run the frontend server
+ 6. Run the frontend server
  
     `cd ./forum_frontend`
     
