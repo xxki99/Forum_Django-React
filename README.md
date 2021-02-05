@@ -6,8 +6,8 @@ Clone this repo
 
 `git clone https://github.com/xxki99/Forum_Django-React`
 
-
 Open your terminal and change directory to Forum_Django-React
+
 `cd ./Forum_Django-React`
 
 ## Setup
@@ -16,15 +16,17 @@ Open your terminal and change directory to Forum_Django-React
  
     - Create a new virtual environment: 
     
-    `python -m venv {"env name"}`
+     `python -m venv {"env name"}`
     
     - Activate environment
+    
      (On windows): 
      
-     `{your env path}/Scripts/activate`
+      `{your env path}/Scripts/activate`
      
      (On Linux): 
-     `source {your env path}/bin/activate`
+     
+      `source {your env path}/bin/activate`
     
     
     
