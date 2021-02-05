@@ -29,17 +29,16 @@ Open your terminal and change directory to Forum_Django-React
     1.3 Install dependencies for backend (requirements.txt is located at Forum_Django-React/forum_backend)
     
     `pip install -r ./forum_backend/requirements.txt`
+ 
+ 2. Create backend database
+
+    `python ./forum_backend/manage.py migrate`
     
- 2. Change directory to forum_frontend and then install dependencies for frontend
+ 3. Change directory to forum_frontend and then install dependencies for frontend
  
     `cd ./forum_frontend`
     
     `npm install`
-
- 3. Create backend database
-
-    `python ./forum_backend/manage.py migrate`
-
     
  4. Run the backend server
  
