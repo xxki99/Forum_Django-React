@@ -12,7 +12,7 @@ import Viewer from "./Viewer";
 import {
     LoginModal,
     UserProfileModal,
-    WritePostModal,
+    TestingRename,
     WriteCommentModal,
     SignupModal,
 } from "./User";
@@ -40,7 +40,7 @@ function App() {
     const { postID } = useParams();
     useEffect(() => {
         if (postID !== "") {
-            setPostUrl(`/api/forum/posts/${postID}`);
+            setPostUrl(`/api/forum/posts/${postID}/`);
         }
     }, [postID]);
 
@@ -174,7 +174,7 @@ function App() {
                         verifyLogin={verifyLogin}
                         setThreadUrl={setThreadUrl}
                     />
-                    <WritePostModal
+                    <TestingRename
                         open={mopen_writepost}
                         handleClose={handleClose_writepost}
                         threadUrl={threadUrl}
