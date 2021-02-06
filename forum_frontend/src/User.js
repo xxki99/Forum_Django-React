@@ -273,6 +273,7 @@ function WriteCommentModal({ open, handleClose, postUrl, preformRefresh }) {
         return (
             <Grid>
                 <TextField
+                    autoFocus
                     fullWidth
                     id="commentContentInputTextField"
                     label="Comment"
