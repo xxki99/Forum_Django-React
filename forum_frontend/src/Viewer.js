@@ -26,6 +26,7 @@ const usestyles = makeStyles({
     titlePanel: {
         padding: "5px 16px",
         // height: "53px",
+        minHeight: "53px", 
     },
     titlePanel_replyButton: {
         fontSize: "18px",
@@ -68,6 +69,10 @@ const defaultPostData = {
     thread: "",
     pub_date: "",
     comment_set: [defaultCommentItem],
+}
+const errorPostData = {
+    ...defaultPostData, 
+    title: "404: Not found"
 }
 
 // component
@@ -171,12 +176,12 @@ function Viewer({
                 })
                 .catch((error) => {
                     console.log(error)
-                    setPostData(defaultPostData)
+                    setPostData(errorPostData)
                 })
         }
     }, [postUrl])
 
-    if (postUrl === "") {
+    if (postData === defaultPostData) {
         return (
             <React.Fragment>
                 <Paper
