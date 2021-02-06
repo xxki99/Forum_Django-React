@@ -172,7 +172,8 @@ async function login(username, password) {
     try {
         const data = await fetchData(loginUrl, "POST", headers, bodyObj);
         const cookies = new Cookies();
-        cookies.set("token", data.token);
+        console.log("login: set token")
+        cookies.set("token", data.token, {path: "/"});
         return data;
     } catch (error) {
         throw error;
@@ -198,6 +199,17 @@ async function signup(username, password, email) {
     }
 }
 
+async function getUserDetail(userUrl){
+    try{
+        const userDetailData =await fetchData(userUrl, "GET")
+        return userDetailData
+    }
+    catch(error){
+        throw error
+    }
+    
+}
+
 export {
     getUserLoginState,
     getThreadsList,
@@ -207,4 +219,5 @@ export {
     writePost,
     writeComment,
     signup,
+    getUserDetail, 
 };

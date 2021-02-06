@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
+import "./App.css"
 import {
     makeStyles,
     Box,
@@ -6,20 +7,23 @@ import {
     Paper,
     Drawer,
     Typography,
-} from "@material-ui/core";
-import Nav from "./Nav";
-import Viewer from "./Viewer";
+} from "@material-ui/core"
+import Nav from "./Nav"
+import Viewer from "./Viewer"
 import {
     LoginModal,
     UserProfileModal,
+    UserDetailModal,
     TestingRename,
     WriteCommentModal,
     SignupModal,
-} from "./User";
-import { getThreadsList, getUserLoginState } from "./ForumAPI";
-import { useParams } from "react-router-dom";
+} from "./User"
+import { getThreadsList, getUserLoginState } from "./ForumAPI"
+import { useParams } from "react-router-dom"
+import Cookies from "universal-cookie"
 
-const navWidth = 20;
+const appWidth = "90vw"
+const navWidth = 23
 const useStyles = makeStyles({
     root: {
         padding: "1vh",
@@ -34,17 +38,20 @@ const useStyles = makeStyles({
         height: "98vh",
         width: `${100 - navWidth}%`,
     },
-});
+})
 
 function App() {
-    const { postID } = useParams();
+    const { postID } = useParams()
     useEffect(() => {
-        if (postID !== "") {
-            setPostUrl(`/api/forum/posts/${postID}/`);
+        if (postID !== undefined) {
+            setPostUrl(`/api/forum/posts/${postID}/`)
         }
-    }, [postID]);
+        else{
+            setPostUrl("")
+        }
+    }, [postID])
 
-    const classes = useStyles();
+    const classes = useStyles()
 
     //User profile data
     const defaultUserInfo = {
@@ -52,33 +59,35 @@ function App() {
         userData: {
             username: "",
         },
-    };
-    const [userInfo, setUserInfo] = useState(defaultUserInfo);
+    }
+    const [userInfo, setUserInfo] = useState(defaultUserInfo)
 
     // verify login by token
     const resetUserInfo = () => {
         var newUserInfo = {
             ...defaultUserInfo,
-        };
-        newUserInfo.isLogin = false;
-        setUserInfo(newUserInfo);
-    };
+        }
+        newUserInfo.isLogin = false
+        setUserInfo(newUserInfo)
+    }
 
     const verifyLogin = () => {
         getUserLoginState()
             .then((data) => {
-                setUserInfo(data);
+                setUserInfo(data)
             })
             .catch((error) => {
-                console.log(error);
-                resetUserInfo();
-            });
-    };
+                console.log(error)
+                const cookies = new Cookies()
+                cookies.remove("token", {path: "/"})
+                resetUserInfo()
+            })
+    }
 
     // component did mount
     useEffect(() => {
-        verifyLogin();
-    }, []);
+        verifyLogin()
+    }, [])
 
     // thread nav data
     const defaultThreadNavData = [
@@ -86,83 +95,98 @@ function App() {
             url: "",
             name: "",
         },
-    ];
-    const [threadNavData, setThreadNavData] = useState(defaultThreadNavData);
+    ]
+    const [threadNavData, setThreadNavData] = useState(defaultThreadNavData)
 
     // get threads list from backend
     useEffect(() => {
         getThreadsList()
             .then((data) => {
-                setThreadNavData(data);
+                setThreadNavData(data)
             })
             .catch((error) => {
-                setThreadNavData(defaultThreadNavData);
-            });
-    }, []);
+                setThreadNavData(defaultThreadNavData)
+            })
+    }, [])
 
     // post data
-    const [postUrl, setPostUrl] = useState("");
+    const [postUrl, setPostUrl] = useState("")
 
     // thread url data
-    const defaultThreadUrl = "/api/forum/threads/1/";
-    const [threadUrl, setThreadUrl] = useState(defaultThreadUrl);
+    const defaultThreadUrl = "/api/forum/threads/1/"
+    const [threadUrl, setThreadUrl] = useState(defaultThreadUrl)
+
+    // user detail data (all user, not only current user)
+    const defaultUserDetailData = {
+        
+    }
+    const [userDetailData, setUserDetailData] = useState(defaultUserDetailData)
+    
 
     // login modal data
-    const [mopen_login, setOpen_Login] = useState(false);
+    const [mopen_login, setOpen_Login] = useState(false)
     const handleOpen_login = () => {
-        setOpen_Login(true);
-    };
+        setOpen_Login(true)
+    }
     const handleClose_login = () => {
-        setOpen_Login(false);
-    };
+        setOpen_Login(false)
+    }
 
     // sign up modal data
-    const [mopen_sign, setOpen_signup] = useState(false);
+    const [mopen_sign, setOpen_signup] = useState(false)
     const handleOpen_signup = () => {
-        setOpen_signup(true);
-    };
+        setOpen_signup(true)
+    }
     const handleClose_signup = () => {
-        setOpen_signup(false);
-    };
+        setOpen_signup(false)
+    }
 
     // userprofile modal data
-    const [mopen_userprofile, setOpen_userprofile] = useState(false);
+    const [mopen_userprofile, setOpen_userprofile] = useState(false)
     const handleOpen_userprofile = () => {
-        setOpen_userprofile(true);
-    };
+        setOpen_userprofile(true)
+    }
     const handleClose_userprofile = () => {
-        setOpen_userprofile(false);
-    };
+        setOpen_userprofile(false)
+    }
 
     // writepost modal data
-    const [mopen_writepost, setOpen_writepost] = useState(false);
+    const [mopen_writepost, setOpen_writepost] = useState(false)
     const handleOpen_writepost = () => {
-        setOpen_writepost(true);
-    };
+        setOpen_writepost(true)
+    }
     const handleClose_writepost = () => {
-        setOpen_writepost(false);
-    };
+        setOpen_writepost(false)
+    }
 
     // writecomment modal data
-    const [mopen_writecomment, setOpen_writecomment] = useState(false);
+    const [mopen_writecomment, setOpen_writecomment] = useState(false)
     const handleOpen_writecomment = () => {
-        setOpen_writecomment(true);
-    };
+        setOpen_writecomment(true)
+    }
     const handleClose_writecomment = () => {
-        setOpen_writecomment(false);
-    };
+        setOpen_writecomment(false)
+    }
+
+    const [mopen_userDetail, setOpen_userDetail] = useState(false)
+    const handleOpen_userDetail = () => {
+        setOpen_userDetail(true)
+    }
+    const handleClose_userDetail = () => {
+        setOpen_userDetail(false)
+    }
 
     // threads drawer
-    const [dopen_thread, setOpen_thread] = useState(false);
+    const [dopen_thread, setOpen_thread] = useState(false)
     const handleOpen_thread = () => {
-        setOpen_thread(true);
-    };
+        setOpen_thread(true)
+    }
     const handleClose_thread = () => {
-        setOpen_thread(false);
-    };
+        setOpen_thread(false)
+    }
 
     // conditional render for modal
-    const modalRender = () => {
+    const modalOptionRender = () => {
         // console.log(userInfo)
         if (userInfo.isLogin) {
             return (
@@ -186,7 +210,7 @@ function App() {
                         postUrl={postUrl}
                     />
                 </React.Fragment>
-            );
+            )
         } else {
             return (
                 <React.Fragment>
@@ -202,26 +226,26 @@ function App() {
                         verifyLogin={verifyLogin}
                     ></SignupModal>
                 </React.Fragment>
-            );
+            )
         }
-    };
+    }
 
     const handleOpenObj = {
         login: handleOpen_login,
         userprofile: handleOpen_userprofile,
         writepost: handleOpen_writepost,
         thread: handleOpen_thread,
-    };
+    }
 
     const threadNavObj = {
         open: dopen_thread,
         onClose: handleClose_thread,
-    };
+    }
 
     return (
         <React.Fragment>
             <Box
-                width={"80%"}
+                width={appWidth}
                 margin="auto"
                 alignItems="center"
                 id="appContainer"
@@ -243,16 +267,25 @@ function App() {
                             postUrl={postUrl}
                             handleOpen_writecomment={handleOpen_writecomment}
                             handleOpen_login={handleOpen_login}
+                            handleOpen_userDetail={handleOpen_userDetail}
                             userInfo={userInfo}
+                            setUserDetailData = {setUserDetailData}
                         />
                     </Paper>
                 </Grid>
             </Box>
 
             {/*render modal*/}
-            {modalRender()}
+            {modalOptionRender()}
+            {/* common modal render */}
+            <UserDetailModal
+                open={mopen_userDetail}
+                handleClose={handleClose_userDetail}
+                userDetailData = {userDetailData}
+                setThreadUrl={setThreadUrl}
+            />
         </React.Fragment>
-    );
+    )
 }
 
-export default App;
+export default App
