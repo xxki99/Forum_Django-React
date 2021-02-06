@@ -32,15 +32,18 @@ import { Link } from "react-router-dom"
 const usestyles = makeStyles({
     nav_root: {
         height: "100%", 
+        maxWidth: "100%", 
         display: "flex", 
         flexDirection: "column", 
     }, 
     controlPanel_root: {
         padding: "5px 16px",
-        height: "53px",
+        maxWidth: "100%", 
+        // height: "53px",
     },
     controlPanel_threadName: {
         flexGrow: 1,
+        maxWidth: "100%", 
     },
     controlPanel_userPanel_button: {
         fontSize: "16px",
@@ -58,8 +61,13 @@ const usestyles = makeStyles({
         width: "100%", 
     }, 
     postItem_button_topBar_title: {
-        flexGrow: 1, 
+        paddingLeft: "3px", 
+        flexGrow: 1,
+        maxWidth: "100%", 
     }, 
+    postItem_button_topBar_title_text: {
+        wordWrap: "break-word", 
+    },
 
     
     postListContainer: {
@@ -149,29 +157,9 @@ const PostItem = ({ postItemData }) => {
                 className={classes.postItem_button}
             >
                 <CardContent className={classes.postItem_button}>
-                    {/* <Grid container justify="flex-start">
-                        <Grid item xs={12 - timeWidth}>
-                            <Typography variant="h5" align="left" className={classes.postTiem_button_title}>
-                                {postItemData.title}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={timeWidth}>
-                            <Typography variant="subtitle2" align="right">
-                                {CalTimeInterval(
-                                    postItemData.leastcomment_date
-                                )}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant="body2">
-                                {postItemData.authorName}
-                            </Typography>
-                        </Grid>
-                    </Grid> */}
-                    
                     <Box display="flex" className={classes.postItem_button_topBar_root}>
                         <Box className={classes.postItem_button_topBar_title}>
-                            <Typography variant="h5" align="left">
+                            <Typography variant="h6" align="left" className={classes.postItem_button_topBar_title_text}>
                                 {postItemData.title}
                             </Typography>
                             

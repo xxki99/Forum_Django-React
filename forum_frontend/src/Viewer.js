@@ -25,7 +25,7 @@ const usestyles = makeStyles({
     }, 
     titlePanel: {
         padding: "5px 16px",
-        height: "53px",
+        // height: "53px",
     },
     titlePanel_replyButton: {
         fontSize: "18px",
@@ -39,6 +39,14 @@ const usestyles = makeStyles({
     commentSet_commentCard_topBar: {
         height: "100%",
     },
+    commentSet_commentCard_userButton: {
+        paddingLeft: "0px",
+        paddingRight: "0px", 
+        minWidth: "auto"
+    }, 
+    commentSet_commentCard_userButton_text: {
+        
+    }, 
     commentSet_commentCard_pubDate: {
         padding: "0px",
         marginTop: "6px",
@@ -90,8 +98,8 @@ function CommentCard({ comment, setUserDetailData, handleOpen_userDetail }) {
                     className={classes.commentSet_commentCard_topBar}
                 >
                     <Grid item>
-                        <Button onClick={handleClick_user} padding={0}>
-                            <Typography variant="body2">
+                        <Button onClick={handleClick_user} padding={0} className={classes.commentSet_commentCard_userButton}>
+                            <Typography variant="body2" align="left" className={classes.commentSet_commentCard_userButton_text}>
                                 {comment.authorName}
                             </Typography>
                         </Button>
@@ -108,7 +116,7 @@ function CommentCard({ comment, setUserDetailData, handleOpen_userDetail }) {
                         </div>
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography variant="body1">
+                        <Typography variant="subtitle1">
                             {comment.content}
                         </Typography>
                     </Grid>

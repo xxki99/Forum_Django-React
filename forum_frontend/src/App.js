@@ -21,7 +21,8 @@ import {
 import { getThreadsList, getUserLoginState } from "./ForumAPI"
 import { useParams } from "react-router-dom"
 
-const navWidth = 25
+const appWidth = "90vw"
+const navWidth = 23
 const useStyles = makeStyles({
     root: {
         padding: "1vh",
@@ -241,7 +242,7 @@ function App() {
     return (
         <React.Fragment>
             <Box
-                width={"80%"}
+                width={appWidth}
                 margin="auto"
                 alignItems="center"
                 id="appContainer"
