@@ -185,6 +185,7 @@ function SignupModal({ open, handleClose, verifyLogin }) {
             {/* content */}
             <DialogContent>
                 <TextField
+                    autoFocus
                     error={errorMessage.username !== ""}
                     helperText={errorMessage.username}
                     margin="dense"
@@ -272,6 +273,7 @@ function WriteCommentModal({ open, handleClose, postUrl, preformRefresh }) {
         return (
             <Grid>
                 <TextField
+                    autoFocus
                     fullWidth
                     id="commentContentInputTextField"
                     label="Comment"
@@ -346,6 +348,7 @@ function WritePostModal({ open, handleClose, threadNavData, threadUrl, preformRe
             <Grid fullWidth container spacing={2}>
                 <Grid item xs={12}>
                     <TextField
+                        autoFocus
                         fullWidth
                         id="postTitleInputTextField"
                         label="Title"
