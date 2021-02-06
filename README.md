@@ -55,4 +55,11 @@ Open your terminal and change directory to Forum_Django-React
     `cd ./forum_frontend`
     
     `npm start`
+
+## TODO
+-  [] Handle frontend input error: write post and write comment
+-  [] Add page function to frontend
+-  [] Add reply comment on comment to both backend and frontend
+-  [] Add change thread function to frontend
+-  [] Add refresh button to thread nav and post viewer
  
