@@ -399,7 +399,7 @@ function UserProfileModal({
 }) {
     const logout = () => {
         const cookies = new Cookies()
-        cookies.remove("token")
+        cookies.remove("token", {path: "/"})
         verifyLogin()
         handleClose()
     }

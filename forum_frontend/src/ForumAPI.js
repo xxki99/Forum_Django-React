@@ -173,7 +173,7 @@ async function login(username, password) {
         const data = await fetchData(loginUrl, "POST", headers, bodyObj);
         const cookies = new Cookies();
         console.log("login: set token")
-        cookies.set("token", data.token);
+        cookies.set("token", data.token, {path: "/"});
         return data;
     } catch (error) {
         throw error;

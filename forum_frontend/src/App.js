@@ -79,7 +79,7 @@ function App() {
             .catch((error) => {
                 console.log(error)
                 const cookies = new Cookies()
-                cookies.remove("token")
+                cookies.remove("token", {path: "/"})
                 resetUserInfo()
             })
     }
