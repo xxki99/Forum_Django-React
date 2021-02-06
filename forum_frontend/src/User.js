@@ -185,6 +185,7 @@ function SignupModal({ open, handleClose, verifyLogin }) {
             {/* content */}
             <DialogContent>
                 <TextField
+                    autoFocus
                     error={errorMessage.username !== ""}
                     helperText={errorMessage.username}
                     margin="dense"
