@@ -40,6 +40,7 @@ const usestyles = makeStyles({
         padding: "5px 16px",
         maxWidth: "100%", 
         // height: "53px",
+        minHeight: "53px", 
     },
     controlPanel_threadName: {
         flexGrow: 1,
