@@ -237,7 +237,7 @@ function SignupModal({ open, handleClose, verifyLogin }) {
     )
 }
 
-function WriteCommentModal({ open, handleClose, postUrl }) {
+function WriteCommentModal({ open, handleClose, postUrl, preformRefresh }) {
     const [commentContent, setCommentContent] = useState("")
 
     const handleChange_comment = (e) => {
@@ -257,6 +257,7 @@ function WriteCommentModal({ open, handleClose, postUrl }) {
         writeComment(postUrl, commentContent)
             .then((data) => {
                 handleClose()
+                preformRefresh()
             })
             .catch((error) => {
                 console.log(error)
@@ -299,7 +300,7 @@ function WriteCommentModal({ open, handleClose, postUrl }) {
     )
 }
 
-function TestingRename({ open, handleClose, threadNavData, threadUrl }) {
+function WritePostModal({ open, handleClose, threadNavData, threadUrl, preformRefresh }) {
     const [postTitle, setPostTitle] = useState("")
     const [postContent, setPostContent] = useState("")
     const [postThread, setPostThread] = useState(threadUrl)
@@ -320,6 +321,7 @@ function TestingRename({ open, handleClose, threadNavData, threadUrl }) {
         console.log("Perform write post")
         writePost(postThread, postTitle, postContent)
         handleClose()
+        preformRefresh()
     }
 
     const title = () => {
@@ -577,7 +579,7 @@ export {
     LoginModal,
     UserProfileModal,
     UserDetailModal, 
-    TestingRename,
+    WritePostModal,
     WriteCommentModal,
     SignupModal,
 }

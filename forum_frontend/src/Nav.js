@@ -227,11 +227,22 @@ function Nav({
     threadNavData,
     threadNavObj,
     setUserDetailData,
+    refreshTrigger, 
 }) {
     const classes = usestyles()
 
+    // refresh
+    useEffect(()=>{
+        refresh()
+    }, [refreshTrigger])
+
     // hooks: threadurl
     useEffect(() => {
+        refresh()
+    }, [threadUrl])
+
+    // refresh: get thread data
+    const refresh = () => {
         if (threadUrl === "") {
             console.log("empty thread url")
             setThreadData(defaultThreadData)
@@ -245,7 +256,7 @@ function Nav({
                     setThreadData(defaultThreadData)
                 })
         }
-    }, [threadUrl])
+    }
 
     // hooks: threadData
     const [threadData, setThreadData] = useState(defaultThreadData)

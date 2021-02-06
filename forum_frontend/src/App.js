@@ -14,7 +14,7 @@ import {
     LoginModal,
     UserProfileModal,
     UserDetailModal,
-    TestingRename,
+    WritePostModal,
     WriteCommentModal,
     SignupModal,
 } from "./User"
@@ -121,6 +121,17 @@ function App() {
         
     }
     const [userDetailData, setUserDetailData] = useState(defaultUserDetailData)
+
+    // refresh trigger
+    const [refreshTrigger_post, setRefreshTrigger_post] = useState(false)
+    const [refreshTrigger_thread, setRefreshTrigger_thread] = useState(false)
+
+    const performRefresh_post = () => {
+        setRefreshTrigger_post(!refreshTrigger_post)
+    }
+    const performRefresh_thread = () => {
+        setRefreshTrigger_thread(!refreshTrigger_thread)
+    }
     
 
     // login modal data
@@ -198,16 +209,18 @@ function App() {
                         verifyLogin={verifyLogin}
                         setThreadUrl={setThreadUrl}
                     />
-                    <TestingRename
+                    <WritePostModal
                         open={mopen_writepost}
                         handleClose={handleClose_writepost}
                         threadUrl={threadUrl}
                         threadNavData={threadNavData}
+                        preformRefresh={performRefresh_thread}
                     />
                     <WriteCommentModal
                         open={mopen_writecomment}
                         handleClose={handleClose_writecomment}
                         postUrl={postUrl}
+                        preformRefresh={performRefresh_post}
                     />
                 </React.Fragment>
             )
@@ -259,6 +272,7 @@ function App() {
                             threadUrl={threadUrl}
                             threadNavData={threadNavData}
                             threadNavObj={threadNavObj}
+                            refreshTrigger={refreshTrigger_thread}
                         />
                     </Paper>
 
@@ -270,6 +284,7 @@ function App() {
                             handleOpen_userDetail={handleOpen_userDetail}
                             userInfo={userInfo}
                             setUserDetailData = {setUserDetailData}
+                            refreshTrigger={refreshTrigger_post}
                         />
                     </Paper>
                 </Grid>

@@ -164,6 +164,7 @@ function Viewer({
     userInfo,
     setUserDetailData,
     handleOpen_userDetail,
+    refreshTrigger, 
 }) {
     const classes = usestyles()
 
@@ -175,8 +176,16 @@ function Viewer({
         }
     }
 
+    useEffect(()=>{
+        refreshPost()
+    }, [refreshTrigger])
+
     const [postData, setPostData] = useState(defaultPostData)
     useEffect(() => {
+        refreshPost()
+    }, [postUrl])
+
+    const refreshPost = () => {
         if (postUrl === "") {
             // console.log("No post url")
         } else {
@@ -189,7 +198,7 @@ function Viewer({
                     setPostData(errorPostData)
                 })
         }
-    }, [postUrl])
+    }
 
     if (postData === defaultPostData) {
         return (
