@@ -299,7 +299,7 @@ function WriteCommentModal({ open, handleClose, postUrl }) {
     )
 }
 
-function TestingRename({ open, handleClose, threadNavData, threadUrl }) {
+function WritePostModal({ open, handleClose, threadNavData, threadUrl }) {
     const [postTitle, setPostTitle] = useState("")
     const [postContent, setPostContent] = useState("")
     const [postThread, setPostThread] = useState(threadUrl)
@@ -577,7 +577,7 @@ export {
     LoginModal,
     UserProfileModal,
     UserDetailModal, 
-    TestingRename,
+    WritePostModal,
     WriteCommentModal,
     SignupModal,
 }

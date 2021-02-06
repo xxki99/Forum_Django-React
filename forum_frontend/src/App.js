@@ -14,7 +14,7 @@ import {
     LoginModal,
     UserProfileModal,
     UserDetailModal,
-    TestingRename,
+    WritePostModal,
     WriteCommentModal,
     SignupModal,
 } from "./User"
@@ -198,7 +198,7 @@ function App() {
                         verifyLogin={verifyLogin}
                         setThreadUrl={setThreadUrl}
                     />
-                    <TestingRename
+                    <WritePostModal
                         open={mopen_writepost}
                         handleClose={handleClose_writepost}
                         threadUrl={threadUrl}
