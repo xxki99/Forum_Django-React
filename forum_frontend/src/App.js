@@ -20,6 +20,7 @@ import {
 } from "./User"
 import { getThreadsList, getUserLoginState } from "./ForumAPI"
 import { useParams } from "react-router-dom"
+import Cookies from "universal-cookie"
 
 const appWidth = "90vw"
 const navWidth = 23
@@ -77,6 +78,8 @@ function App() {
             })
             .catch((error) => {
                 console.log(error)
+                const cookies = new Cookies()
+                cookies.remove("token")
                 resetUserInfo()
             })
     }

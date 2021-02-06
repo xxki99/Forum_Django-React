@@ -59,6 +59,7 @@ const usestyles = makeStyles({
     },
     postItem_button_topBar_root: {
         width: "100%", 
+        marginBottom: "5px", 
     }, 
     postItem_button_topBar_title: {
         paddingLeft: "3px", 
