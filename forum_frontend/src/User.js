@@ -348,6 +348,7 @@ function WritePostModal({ open, handleClose, threadNavData, threadUrl, preformRe
             <Grid fullWidth container spacing={2}>
                 <Grid item xs={12}>
                     <TextField
+                        autoFocus
                         fullWidth
                         id="postTitleInputTextField"
                         label="Title"
