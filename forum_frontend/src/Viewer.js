@@ -19,21 +19,21 @@ import { getUrl } from "./UrlTools"
 // override style
 const usestyles = makeStyles({
     viewer_root: {
-        height: "100%", 
-        display: "flex", 
-        flexDirection: "column", 
-    }, 
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+    },
     titlePanel: {
         padding: "5px 16px",
         // height: "53px",
-        minHeight: "53px", 
+        minHeight: "53px",
     },
     titlePanel_replyButton: {
         fontSize: "18px",
     },
     commentSet_root: {
-        overflowY: "auto", 
-    }, 
+        overflowY: "auto",
+    },
     commentSet_commentCard: {
         marginBottom: "1px",
     },
@@ -42,12 +42,10 @@ const usestyles = makeStyles({
     },
     commentSet_commentCard_userButton: {
         paddingLeft: "0px",
-        paddingRight: "0px", 
-        minWidth: "auto"
-    }, 
-    commentSet_commentCard_userButton_text: {
-        
-    }, 
+        paddingRight: "0px",
+        minWidth: "auto",
+    },
+    commentSet_commentCard_userButton_text: {},
     commentSet_commentCard_pubDate: {
         padding: "0px",
         marginTop: "6px",
@@ -71,8 +69,8 @@ const defaultPostData = {
     comment_set: [defaultCommentItem],
 }
 const errorPostData = {
-    ...defaultPostData, 
-    title: "404: Not found"
+    ...defaultPostData,
+    title: "404: Not found",
 }
 
 // component
@@ -103,8 +101,20 @@ function CommentCard({ comment, setUserDetailData, handleOpen_userDetail }) {
                     className={classes.commentSet_commentCard_topBar}
                 >
                     <Grid item>
-                        <Button onClick={handleClick_user} padding={0} className={classes.commentSet_commentCard_userButton}>
-                            <Typography variant="body2" align="left" className={classes.commentSet_commentCard_userButton_text}>
+                        <Button
+                            onClick={handleClick_user}
+                            padding={0}
+                            className={
+                                classes.commentSet_commentCard_userButton
+                            }
+                        >
+                            <Typography
+                                variant="body2"
+                                align="left"
+                                className={
+                                    classes.commentSet_commentCard_userButton_text
+                                }
+                            >
                                 {comment.authorName}
                             </Typography>
                         </Button>
@@ -184,11 +194,31 @@ function Viewer({
     if (postData === defaultPostData) {
         return (
             <React.Fragment>
-                <Paper
+                {/* <Paper
                     variant="outlined"
                     className={classes.titlePanel}
-                ></Paper>
-                <Box></Box>
+                ></Paper> */}
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    height="100%"
+                >
+                    <Box
+                        display="flex"
+                        flexDirection="row"
+                        justifyContent="center"
+                    >
+                        <Paper variant="outlined">
+                            <Box m={5}>
+                                <Typography variant="h5" align="center">
+                                    Forum made with Django & React<br/><br />
+                                    Github: https://github.com/xxki99/Forum_Django-React
+                                </Typography>
+                            </Box>
+                        </Paper>
+                    </Box>
+                </Box>
             </React.Fragment>
         )
     } else {
