@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 import {
     Dialog,
     DialogTitle,
@@ -9,24 +9,63 @@ import {
     Typography,
     Grid,
     Box,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import { getUrl } from "./UrlTools";
-import Cookies from "universal-cookie";
-import { CommonDialog, ThreadsSelect } from "./CommonlyUsedComponent";
-import { ConvertTimeToString } from "./TimeTools";
-import { login, writePost, writeComment, signup } from "./ForumAPI";
+} from "@material-ui/core"
+import { makeStyles } from "@material-ui/styles"
+import { getUrl } from "./UrlTools"
+import Cookies from "universal-cookie"
+import { CommonDialog, ThreadsSelect } from "./CommonlyUsedComponent"
+import { ConvertTimeToString } from "./TimeTools"
+import { login, writePost, writeComment, signup } from "./ForumAPI"
 
 const useStyles = makeStyles({
     modal: {
         width: "600px",
     },
-});
+})
 
-function UserDetailModal() {}
+function UserDetailModal({ open, handleClose, userDetailData, setThreadUrl }) {
+    const handleClick_posts = () => {
+        setThreadUrl(userDetailData.post_set_url)
+        handleClose()
+    }
+
+    const title = () => {
+        return (
+            <Grid>
+                <Typography>{userDetailData.username}</Typography>
+            </Grid>
+        )
+    }
+
+    const content = () => {
+        return (
+            <Grid>
+                <Typography>{ConvertTimeToString(userDetailData.date_joined)}</Typography>
+            </Grid>
+        )
+    }
+
+    const actions = () => {
+        return (
+            <Grid>
+                <Button onClick={handleClick_posts}>Posts</Button>
+            </Grid>
+        )
+    }
+
+    return (
+        <CommonDialog
+            open={open}
+            handleClose={handleClose}
+            title={title()}
+            content={content()}
+            actions={actions()}
+        />
+    )
+}
 
 function SignupModal({ open, handleClose, verifyLogin }) {
-    const classes = useStyles();
+    const classes = useStyles()
 
     // reset state after handleClose
     useEffect(() => {
@@ -35,103 +74,105 @@ function SignupModal({ open, handleClose, verifyLogin }) {
         setPassword("")
     }, [open])
 
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [email, setEmail] = useState("")
 
     const handleChange_username = (e) => {
-        setUsername(e.target.value);
-    };
+        setUsername(e.target.value)
+    }
 
     const handleChange_password = (e) => {
-        setPassword(e.target.value);
-    };
+        setPassword(e.target.value)
+    }
 
     const handleChange_confirmPassword = (e) => {
-        setConfirmPassword(e.target.value);
-    };
+        setConfirmPassword(e.target.value)
+    }
 
     const handleChange_email = (e) => {
-        setEmail(e.target.value);
-    };
+        setEmail(e.target.value)
+    }
 
     const handleClick_signup = () => {
         if (password === confirmPassword) {
-            performSignup();
+            performSignup()
         } else {
             setErrorMessage({
                 ...defaultErrorMessage,
                 confirmPassword: "Passwords do not match",
-            });
+            })
             // handle not match
         }
-    };
+    }
 
-    const handleClick_enter =(e)=>{
-        if (e.keyCode === 13){
+    const handleClick_enter = (e) => {
+        if (e.keyCode === 13) {
             handleClick_signup()
         }
     }
 
     const performSignup = async () => {
         try {
-            await signup(username, password, email);
+            await signup(username, password, email)
         } catch (error) {
             // handle signup error
             // console.log(error);
             if ("non_field_errors" in error) {
-                set_non_field_errors(error.non_field_errors);
+                set_non_field_errors(error.non_field_errors)
             } else {
                 if ("username" in error) {
                     setErrorMessage({
                         ...defaultErrorMessage,
                         username: error.username,
-                    });
+                    })
                 } else {
                     if ("password" in error) {
                         setErrorMessage({
                             ...defaultErrorMessage,
                             password: error.password,
-                        });
+                        })
                     } else {
                         if ("email" in error) {
                             setErrorMessage({
                                 ...defaultErrorMessage,
                                 email: error.email,
-                            });
+                            })
                         }
                     }
                 }
             }
-            return;
+            return
         }
 
         try {
-            console.log("Try login");
-            await login(username, password);
-            verifyLogin();
-            handleClose();
+            console.log("Try login")
+            await login(username, password)
+            verifyLogin()
+            handleClose()
         } catch (error) {
             // handle login error
-            return;
+            return
         }
-    };
+    }
 
     const defaultErrorMessage = {
         username: "",
         password: "",
         confirmPassword: "",
         email: "",
-    };
+    }
 
-    const [non_field_errors, set_non_field_errors] = useState([]);
+    const [non_field_errors, set_non_field_errors] = useState([])
 
-    const [errorMessage, setErrorMessage] = useState(defaultErrorMessage);
+    const [errorMessage, setErrorMessage] = useState(defaultErrorMessage)
 
     return (
         <Dialog
-        onKeyUp={(e) => {handleClick_enter(e)}}
+            onKeyUp={(e) => {
+                handleClick_enter(e)
+            }}
             open={open}
             onClose={handleClose}
             aria-labelledby="alert-dialog-title"
@@ -193,15 +234,15 @@ function SignupModal({ open, handleClose, verifyLogin }) {
                 <Button onClick={handleClick_signup}>Signup</Button>
             </DialogActions>
         </Dialog>
-    );
+    )
 }
 
 function WriteCommentModal({ open, handleClose, postUrl }) {
-    const [commentContent, setCommentContent] = useState("");
+    const [commentContent, setCommentContent] = useState("")
 
     const handleChange_comment = (e) => {
-        setCommentContent(e.target.value);
-    };
+        setCommentContent(e.target.value)
+    }
 
     const performWriteComment = () => {
         /*
@@ -215,16 +256,16 @@ function WriteCommentModal({ open, handleClose, postUrl }) {
 
         writeComment(postUrl, commentContent)
             .then((data) => {
-                handleClose();
+                handleClose()
             })
             .catch((error) => {
-                console.log(error);
-            });
-    };
+                console.log(error)
+            })
+    }
 
     const title = () => {
-        return <Grid>Write a new Comment</Grid>;
-    };
+        return <Grid>Write a new Comment</Grid>
+    }
 
     const content = () => {
         return (
@@ -240,12 +281,12 @@ function WriteCommentModal({ open, handleClose, postUrl }) {
                     onChange={handleChange_comment}
                 />
             </Grid>
-        );
-    };
+        )
+    }
 
     const actions = () => {
-        return <Button onClick={performWriteComment}>Comment</Button>;
-    };
+        return <Button onClick={performWriteComment}>Comment</Button>
+    }
 
     return (
         <CommonDialog
@@ -255,31 +296,31 @@ function WriteCommentModal({ open, handleClose, postUrl }) {
             content={content()}
             actions={actions()}
         />
-    );
+    )
 }
 
 function TestingRename({ open, handleClose, threadNavData, threadUrl }) {
-    const [postTitle, setPostTitle] = useState("");
-    const [postContent, setPostContent] = useState("");
-    const [postThread, setPostThread] = useState(threadUrl);
+    const [postTitle, setPostTitle] = useState("")
+    const [postContent, setPostContent] = useState("")
+    const [postThread, setPostThread] = useState(threadUrl)
 
     const handleChange_title = (e) => {
-        setPostTitle(e.target.value);
-    };
+        setPostTitle(e.target.value)
+    }
 
     const handleChange_content = (e) => {
-        setPostContent(e.target.value);
-    };
+        setPostContent(e.target.value)
+    }
 
     const handleChange_thread = (e) => {
-        setPostThread(e.target.value);
-    };
+        setPostThread(e.target.value)
+    }
 
     const performWritePost = () => {
-        console.log("Perform write post");
-        writePost(postThread, postTitle, postContent);
-        handleClose();
-    };
+        console.log("Perform write post")
+        writePost(postThread, postTitle, postContent)
+        handleClose()
+    }
 
     const title = () => {
         return (
@@ -295,8 +336,8 @@ function TestingRename({ open, handleClose, threadNavData, threadUrl }) {
                     />
                 </Box>
             </Box>
-        );
-    };
+        )
+    }
 
     const content = () => {
         return (
@@ -327,16 +368,16 @@ function TestingRename({ open, handleClose, threadNavData, threadUrl }) {
                     />
                 </Grid>
             </Grid>
-        );
-    };
+        )
+    }
 
     const actions = () => {
         return (
             <Grid>
                 <Button onClick={performWritePost}>Write post</Button>
             </Grid>
-        );
-    };
+        )
+    }
 
     return (
         <CommonDialog
@@ -346,7 +387,7 @@ function TestingRename({ open, handleClose, threadNavData, threadUrl }) {
             content={content()}
             actions={actions()}
         />
-    );
+    )
 }
 
 function UserProfileModal({
@@ -357,25 +398,25 @@ function UserProfileModal({
     setThreadUrl,
 }) {
     const logout = () => {
-        const cookies = new Cookies();
-        cookies.remove("token");
-        verifyLogin();
-        handleClose();
-    };
+        const cookies = new Cookies()
+        cookies.remove("token")
+        verifyLogin()
+        handleClose()
+    }
 
     const directToUserPosts = (url) => {
-        setThreadUrl(url);
-        handleClose();
-    };
+        setThreadUrl(url)
+        handleClose()
+    }
 
-    const { userData } = userInfo;
+    const { userData } = userInfo
     const title = () => {
         return (
             <Grid>
                 <Typography>{userData.username}</Typography>
             </Grid>
-        );
-    };
+        )
+    }
 
     const content = () => {
         return (
@@ -384,23 +425,23 @@ function UserProfileModal({
                     {ConvertTimeToString(userData.date_joined)}
                 </Typography>
             </Grid>
-        );
-    };
+        )
+    }
 
     const actions = () => {
         return (
             <Grid>
                 <Button
                     onClick={() => {
-                        directToUserPosts(userData.post_set_url);
+                        directToUserPosts(userData.post_set_url)
                     }}
                 >
                     Posts
                 </Button>
                 <Button onClick={logout}>Logout</Button>
             </Grid>
-        );
-    };
+        )
+    }
 
     return (
         <CommonDialog
@@ -410,79 +451,81 @@ function UserProfileModal({
             content={content()}
             actions={actions()}
         />
-    );
+    )
 }
 
 function LoginModal({ open, handleClose, verifyLogin, handleOpen_signup }) {
     useEffect(() => {
-        resetInput();
-        setErrorMessage(defaultErrorMessage);
-    }, [open]);
+        resetInput()
+        setErrorMessage(defaultErrorMessage)
+    }, [open])
 
     const resetInput = () => {
-        setUsername("");
-        setPassword("");
-    };
+        setUsername("")
+        setPassword("")
+    }
 
-    const [username, setUsername] = useState("");
+    const [username, setUsername] = useState("")
 
     const handleChange_username = (e) => {
-        setUsername(e.target.value);
-    };
+        setUsername(e.target.value)
+    }
 
-    const [password, setPassword] = useState("");
+    const [password, setPassword] = useState("")
 
     const handleChange_password = (e) => {
-        setPassword(e.target.value);
-    };
+        setPassword(e.target.value)
+    }
 
     const handleClick_login = () => {
-        performLogin();
+        performLogin()
         // handleClose();
-    };
+    }
 
     const handleClick_enter = (e) => {
-        if (e.keyCode === 13){
-            handleClick_login();
+        if (e.keyCode === 13) {
+            handleClick_login()
         }
     }
 
     const handleClick_signup = () => {
-        handleClose();
-        handleOpen_signup();
-    };
+        handleClose()
+        handleOpen_signup()
+    }
 
     const performLogin = () => {
         // reset default errorMessage
-        setErrorMessage(defaultErrorMessage);
+        setErrorMessage(defaultErrorMessage)
         login(username, password)
             .then((data) => {
-                verifyLogin();
-                handleClose();
+                verifyLogin()
+                handleClose()
             })
             .catch((error) => {
-                console.log(error);
+                console.log(error)
                 if ("non_field_errors" in error) {
                     setErrorMessage({
                         ...defaultErrorMessage,
                         non_field_errors: error.non_field_errors,
-                    });
+                    })
                 } else {
-                    setErrorMessage({ ...error, non_field_errors: "" });
+                    setErrorMessage({ ...error, non_field_errors: "" })
                 }
-            });
-    };
+            })
+    }
 
     const defaultErrorMessage = {
         username: "",
         password: "",
         non_field_errors: "",
-    };
-    const [errorMessage, setErrorMessage] = useState(defaultErrorMessage);
+    }
+    const [errorMessage, setErrorMessage] = useState(defaultErrorMessage)
 
     return (
         <Dialog
-        onKeyUp={(e) => {handleClick_enter(e)}}
+            onKeyUp={(e) => {
+                handleClick_enter(e)
+            }}
             open={open}
             onClose={handleClose}
             aria-labelledby="alert-dialog-title"
@@ -527,13 +570,14 @@ function LoginModal({ open, handleClose, verifyLogin, handleOpen_signup }) {
                 <Button onClick={handleClick_login}>Login</Button>
             </DialogActions>
         </Dialog>
-    );
+    )
 }
 
 export {
     LoginModal,
     UserProfileModal,
+    UserDetailModal, 
     TestingRename,
     WriteCommentModal,
     SignupModal,
-};
+}

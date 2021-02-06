@@ -198,6 +198,17 @@ async function signup(username, password, email) {
     }
 }
 
+async function getUserDetail(userUrl){
+    try{
+        const userDetailData =await fetchData(userUrl, "GET")
+        return userDetailData
+    }
+    catch(error){
+        throw error
+    }
+    
+}
+
 export {
     getUserLoginState,
     getThreadsList,
@@ -207,4 +218,5 @@ export {
     writePost,
     writeComment,
     signup,
+    getUserDetail, 
 };

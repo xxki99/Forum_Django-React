@@ -12,24 +12,29 @@ import {
     Drawer,
     ListItem,
     List,
-} from "@material-ui/core";
+} from "@material-ui/core"
 
 // icon
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
-import AddIcon from "@material-ui/icons/Add";
+import AccountCircle from "@material-ui/icons/AccountCircle"
+import VerifiedUserIcon from "@material-ui/icons/VerifiedUser"
+import AddIcon from "@material-ui/icons/Add"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"
 
-import { CalTimeInterval } from "./TimeTools";
-import { getUrl, getPostId } from "./UrlTools";
+import { CalTimeInterval } from "./TimeTools"
+import { getUrl, getPostId } from "./UrlTools"
 
-import { getThreadDetailData, writePost } from "./ForumAPI";
+import { getThreadDetailData, writePost, getUserDetail } from "./ForumAPI"
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
 
 // override style here
 const usestyles = makeStyles({
+    nav_root: {
+        height: "100%", 
+        display: "flex", 
+        flexDirection: "column", 
+    }, 
     controlPanel_root: {
         padding: "5px 16px",
         height: "53px",
@@ -42,12 +47,25 @@ const usestyles = makeStyles({
     },
     postItem_root: {
         width: "100%",
+        height: "auto",
         marginBottom: "1px",
     },
     postItem_button: {
         width: "100%",
+        height: "auto"
     },
-});
+    postItem_button_topBar_root: {
+        width: "100%", 
+    }, 
+    postItem_button_topBar_title: {
+        flexGrow: 1, 
+    }, 
+
+    
+    postListContainer: {
+        overflowY: "auto", 
+    },
+})
 
 // default state variables here
 const defaultPostSetItem = {
@@ -55,16 +73,16 @@ const defaultPostSetItem = {
     title: "",
     authorName: "",
     pub_date: "",
-};
+}
 const defaultThreadData = {
     name: "",
     url: "",
     post_set: [defaultPostSetItem],
-};
+}
 
 // component
 function ControlPanel({ threadName, handleOpenObj, userInfo }) {
-    const classes = usestyles();
+    const classes = usestyles()
 
     const userPanel = () => {
         if (userInfo.isLogin) {
@@ -82,7 +100,7 @@ function ControlPanel({ threadName, handleOpenObj, userInfo }) {
                         />
                     </IconButton>
                 </Grid>
-            );
+            )
         } else {
             // controlpanel for {not login}
             return (
@@ -93,9 +111,9 @@ function ControlPanel({ threadName, handleOpenObj, userInfo }) {
                         />
                     </IconButton>
                 </Grid>
-            );
+            )
         }
-    };
+    }
 
     return (
         <Paper variant="outlined" className={classes.controlPanel_root}>
@@ -111,48 +129,74 @@ function ControlPanel({ threadName, handleOpenObj, userInfo }) {
                 </Grid>
             </Grid>
         </Paper>
-    );
+    )
 }
 
 // component
-const PostItem = ({ postItemData, handleClick }) => {
-    const classes = usestyles();
+const PostItem = ({ postItemData }) => {
+    const classes = usestyles()
     if (postItemData === defaultPostSetItem) {
-        return <React.Fragment></React.Fragment>;
+        return <React.Fragment></React.Fragment>
     }
-    const timeWidth = 1;
-    const postid = getPostId(postItemData.url);
-    return (
-            <Card className={classes.postItem_root}>
-                <ButtonBase component={Link} to={`/posts/${postid}`} className={classes.postItem_button}>
-                    <CardContent className={classes.postItem_button}>
-                        <Grid container justify="flex-start">
-                            <Grid item xs={12 - timeWidth}>
-                                <Typography variant="h5" align="left">
-                                    {postItemData.title}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={timeWidth}>
-                                <Typography variant="subtitle2" align="right">
-                                    {CalTimeInterval(
-                                        postItemData.leastcomment_date
-                                    )}
-                                </Typography>
-                            </Grid>
-                        </Grid>
+    const timeWidth = 1
+    const postid = getPostId(postItemData.url)
 
-                        <Grid container>
-                            <Grid>
-                                <Typography variant="body2">
-                                    {postItemData.authorName}
-                                </Typography>
-                            </Grid>
+    return (
+        <Card className={classes.postItem_root}>
+            <ButtonBase
+                component={Link}
+                to={`/posts/${postid}`}
+                className={classes.postItem_button}
+            >
+                <CardContent className={classes.postItem_button}>
+                    {/* <Grid container justify="flex-start">
+                        <Grid item xs={12 - timeWidth}>
+                            <Typography variant="h5" align="left" className={classes.postTiem_button_title}>
+                                {postItemData.title}
+                            </Typography>
                         </Grid>
-                    </CardContent>
-                </ButtonBase>
-            </Card>
-    );
-};
+                        <Grid item xs={timeWidth}>
+                            <Typography variant="subtitle2" align="right">
+                                {CalTimeInterval(
+                                    postItemData.leastcomment_date
+                                )}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="body2">
+                                {postItemData.authorName}
+                            </Typography>
+                        </Grid>
+                    </Grid> */}
+                    
+                    <Box display="flex" className={classes.postItem_button_topBar_root}>
+                        <Box className={classes.postItem_button_topBar_title}>
+                            <Typography variant="h5" align="left">
+                                {postItemData.title}
+                            </Typography>
+                            
+                        </Box>
+                        <Box>
+                            <Typography variant="subtitle2" align="right">
+                                {CalTimeInterval(
+                                    postItemData.leastcomment_date
+                                )}
+                            </Typography>
+                        </Box>
+                    </Box>
+                    
+                        <Box>
+                            <Typography variant="body2">
+                                {postItemData.authorName}
+                            </Typography>
+                    </Box>
+
+
+                </CardContent>
+            </ButtonBase>
+        </Card>
+    )
+}
 
 // component
 function PostList({ post_set, handleClick }) {
@@ -161,10 +205,10 @@ function PostList({ post_set, handleClick }) {
             <div key={index}>
                 <PostItem postItemData={post} handleClick={handleClick} />
             </div>
-        );
-    });
+        )
+    })
 
-    return postList;
+    return postList
 }
 
 // component
@@ -174,14 +218,14 @@ function ThreadNavDrawer({ open, onClose, threadNavData }) {
             <ListItem key={index}>
                 <Button>{thread.name}</Button>
             </ListItem>
-        );
-    });
+        )
+    })
 
     return (
         <Drawer open={open} onClose={onClose} anchor="left">
-            <List>{threadlist}</List>
+            <Box>{threadlist}</Box>
         </Drawer>
-    );
+    )
 }
 
 // component
@@ -192,40 +236,46 @@ function Nav({
     threadUrl,
     threadNavData,
     threadNavObj,
+    setUserDetailData,
 }) {
+    const classes = usestyles()
+
     // hooks: threadurl
     useEffect(() => {
         if (threadUrl === "") {
-            console.log("empty thread url");
-            setThreadData(defaultThreadData);
+            console.log("empty thread url")
+            setThreadData(defaultThreadData)
         } else {
             getThreadDetailData(threadUrl)
                 .then((data) => {
-                    setThreadData(data);
+                    setThreadData(data)
                 })
                 .catch((error) => {
-                    console.log(`fetch thread data error: ${error}`);
-                    setThreadData(defaultThreadData);
-                });
+                    console.log(`fetch thread data error: ${error}`)
+                    setThreadData(defaultThreadData)
+                })
         }
-    }, [threadUrl]);
+    }, [threadUrl])
 
     // hooks: threadData
-    const [threadData, setThreadData] = useState(defaultThreadData);
+    const [threadData, setThreadData] = useState(defaultThreadData)
 
     // return render
     return (
         <React.Fragment>
-            <Box>
+            <Box className={classes.nav_root}>
                 <ControlPanel
                     threadName={threadData.name}
                     handleOpenObj={handleOpenObj}
                     userInfo={userInfo}
                 />
-                <PostList
-                    post_set={threadData.post_set}
-                    handleClick={handleClick_post}
-                />
+                <Box className={classes.postListContainer}>
+                    <PostList
+                        post_set={threadData.post_set}
+                        handleClick={handleClick_post}
+                        setUserDetailData={setUserDetailData}
+                    />
+                </Box>
             </Box>
             <ThreadNavDrawer
                 open={threadNavObj.open}
@@ -233,8 +283,8 @@ function Nav({
                 threadNavData={threadNavData}
             />
         </React.Fragment>
-    );
+    )
 }
 
 // export default component: Nav
-export default Nav;
+export default Nav
