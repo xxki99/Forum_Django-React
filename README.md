@@ -50,9 +50,7 @@ Open your terminal and change directory to Forum_Django-React
  
  
     
- 6. Run the frontend server
- 
-    `cd ./forum_frontend`
+ 6. Run the frontend server inside ./forum_frontend
     
     `npm start`
 
